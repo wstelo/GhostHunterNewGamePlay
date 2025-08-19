@@ -1,1 +1,1 @@
-# GhostHunterNewGamePlay
+# NewGame
