@@ -7,7 +7,7 @@ QualitySettings:
   m_CurrentQuality: 5
   m_QualitySettings:
   - serializedVersion: 3
-    name: Fastest
+    name: Very Low
     pixelLightCount: 0
     shadows: 0
     shadowResolution: 0
@@ -55,7 +55,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 3
-    name: Fast
+    name: Low
     pixelLightCount: 0
     shadows: 0
     shadowResolution: 0
@@ -103,7 +103,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 3
-    name: Simple
+    name: Medium
     pixelLightCount: 1
     shadows: 1
     shadowResolution: 0
@@ -124,7 +124,7 @@ QualitySettings:
     realtimeReflectionProbes: 0
     billboardsFaceCameraPosition: 0
     useLegacyDetailDistribution: 1
-    vSyncCount: 0
+    vSyncCount: 1
     lodBias: 0.7
     maximumLODLevel: 0
     enableLODCrossFade: 1
@@ -151,7 +151,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 3
-    name: Good
+    name: High
     pixelLightCount: 2
     shadows: 2
     shadowResolution: 1
@@ -199,7 +199,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 3
-    name: Beautiful
+    name: Very High
     pixelLightCount: 3
     shadows: 2
     shadowResolution: 2
@@ -247,14 +247,14 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   - serializedVersion: 3
-    name: Fantastic
-    pixelLightCount: 20
+    name: Ultra
+    pixelLightCount: 4
     shadows: 2
-    shadowResolution: 3
-    shadowProjection: 0
-    shadowCascades: 1
-    shadowDistance: 50
-    shadowNearPlaneOffset: 1
+    shadowResolution: 2
+    shadowProjection: 1
+    shadowCascades: 4
+    shadowDistance: 150
+    shadowNearPlaneOffset: 3
     shadowCascade2Split: 0.33333334
     shadowCascade4Split: {x: 0.06666667, y: 0.2, z: 0.46666667}
     shadowmaskMode: 1
@@ -262,13 +262,13 @@ QualitySettings:
     globalTextureMipmapLimit: 0
     textureMipmapLimitSettings: []
     anisotropicTextures: 2
-    antiAliasing: 4
-    softParticles: 0
+    antiAliasing: 2
+    softParticles: 1
     softVegetation: 1
     realtimeReflectionProbes: 1
     billboardsFaceCameraPosition: 1
     useLegacyDetailDistribution: 1
-    vSyncCount: 0
+    vSyncCount: 1
     lodBias: 2
     maximumLODLevel: 0
     enableLODCrossFade: 1
@@ -296,8 +296,18 @@ QualitySettings:
     excludedTargetPlatforms: []
   m_TextureMipmapLimitGroupNames: []
   m_PerPlatformDefaultQuality:
-    Android: 0
+    Android: 2
+    Nintendo 3DS: 5
+    Nintendo Switch: 5
+    PS4: 5
+    PSM: 5
+    PSP2: 2
     Server: 0
     Standalone: 5
-    WebGL: 5
-    iPhone: 1
+    Tizen: 2
+    WebGL: 3
+    WiiU: 5
+    Windows Store Apps: 5
+    XboxOne: 5
+    iPhone: 2
+    tvOS: 2

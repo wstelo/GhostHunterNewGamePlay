@@ -12,11 +12,6 @@ public class MainMenuButtonHandler : MonoBehaviour
 
     private void Awake()
     {
-        Init();
-    }
-
-    private void Init()
-    {
         _startGameButton.onClick.AddListener(ClickStartButton);
     }
 

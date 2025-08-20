@@ -16,7 +16,7 @@ public class SpawnableObjectDataFactory
 
         foreach (var item in _configList)
         {
-            var unitData = new SpawnableObjectData<Ghost>(item.Type, item.UnitPrefab, item.Color);
+            var unitData = new SpawnableObjectData<Ghost>(item.Type, item.UnitPrefab, item.Color, item.UnitPreviewPrefab);
             unitsData.Add(unitData);
         }
 
@@ -29,7 +29,7 @@ public class SpawnableObjectDataFactory
 
         foreach (var item in _configList)
         {
-            var projectileData = new SpawnableObjectData<Projectile>(item.Type, item.ProjectilePrefab, item.Color);
+            var projectileData = new SpawnableObjectData<Projectile>(item.Type, item.ProjectilePrefab, item.Color, item.UnitPreviewPrefab);
             projectilesData.Add(projectileData);               
         }
 

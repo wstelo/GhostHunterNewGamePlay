@@ -9,7 +9,7 @@ public class ProjectileMover : MonoBehaviour
 
     private Ghost _currentTarget;
     private float _minDistanceToTarget = 1f;
-    private Vector3 _offset = new Vector3(0,1,0);
+    private Vector3 _offsetY = new Vector3(0,1,0);
 
     public event Action TargetAchieved;
 
@@ -17,7 +17,7 @@ public class ProjectileMover : MonoBehaviour
     {
         if(_currentTarget != null)
         {
-            transform.position = Vector3.MoveTowards(transform.position, _currentTarget.transform.position + _offset, _moveSpeed * Time.fixedDeltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, _currentTarget.transform.position + _offsetY, _moveSpeed * Time.fixedDeltaTime);
 
             if (transform.position.IsEnoughClose(_currentTarget.transform.position, _minDistanceToTarget))
             {

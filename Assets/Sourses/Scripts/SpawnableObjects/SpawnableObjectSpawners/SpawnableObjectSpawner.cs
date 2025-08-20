@@ -11,7 +11,6 @@ public class SpawnableObjectSpawner<T> where T : SpawnableObject<T>
     private int _poolMaxSize = 10;
     private SpawnableObjectData<T> _data;
 
-
     public SpawnableObjectSpawner(SpawnableObjectFactory factory, SpawnableObjectData<T> data)
     {
         _factory = factory;
@@ -56,8 +55,8 @@ public class SpawnableObjectSpawner<T> where T : SpawnableObject<T>
 
     private void ReleasedObject(T item)
     {
-         item.Destroyed -= ReleasedObject;
-        _pool.Release(item);              
+        item.Destroyed -= ReleasedObject;
+        _pool.Release(item);
     }
 
     private void DestroyObject(T item)

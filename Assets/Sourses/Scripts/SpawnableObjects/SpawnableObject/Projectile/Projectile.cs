@@ -5,6 +5,8 @@ public class Projectile : SpawnableObject<Projectile>
 {
     [SerializeField] private ProjectileMover _mover;
     [SerializeField] private List<ParticleSystem> particleSystems;
+
+    public ElementTypes Type;
     
     private void OnEnable()
     {
@@ -18,6 +20,8 @@ public class Projectile : SpawnableObject<Projectile>
 
     public override void Init(Color color, ElementTypes elementType)
     {
+        Type = elementType;
+
         foreach (var particle in particleSystems)                  
         {
             var main = particle.main;
@@ -27,6 +31,6 @@ public class Projectile : SpawnableObject<Projectile>
 
     public void SetTarget(Ghost target)
     {
-        _mover.Init(target);
+            _mover.Init(target);
     }
 }

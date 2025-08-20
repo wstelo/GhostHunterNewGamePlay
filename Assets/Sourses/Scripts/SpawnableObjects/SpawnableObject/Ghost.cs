@@ -1,26 +1,39 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Splines;
 
 public class Ghost : SpawnableObject<Ghost>
 {
+    [SerializeField] private EnemyMover _enemyMover;
+
     private MeshRenderer _renderer;
-    private Color _color;
+
+    public event Action<Ghost> SpawnLineWalked;
+
     public ElementTypes Type { get; private set; }
 
     private void Awake()
     {
         _renderer = GetComponent<MeshRenderer>();
     }
+    private void OnEnable()
+    {
+        _enemyMover.SpawnLineWalked += WalkedLine;
+    }
 
     public override void Init(Color color, ElementTypes elementType)
     {
-        _color = color;
-        _renderer.material.color = _color;
+        _renderer.material.color = color;
         Type = elementType;
+    }
 
-        Vector3 zPosition = new Vector3(transform.position.x, transform.position.y, 0);         ///////////////////////////////////////////////////////////
-        transform.localPosition = zPosition;
+    public void InitMover(SplineContainer container, float speed)
+    {
+        _enemyMover.Init(container, speed);
+    }
+
+    private void WalkedLine()
+    {
+        SpawnLineWalked?.Invoke(this);
     }
 }

@@ -19,3 +19,5 @@ MonoBehaviour:
     type: 3}
   _hitEffect: {fileID: 0}
   _typeColor: {r: 1, g: 0.8714467, b: 0, a: 1}
+  _unitPreviewPrefab: {fileID: 6741835550949520439, guid: b1f4a3da46fa952459d574fb865c6e69,
+    type: 3}
