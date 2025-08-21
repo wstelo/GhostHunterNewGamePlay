@@ -5,14 +5,14 @@ public class SpawnableObjectData<T> where T : SpawnableObject<T>
     private ElementTypes _type;
     private T _prefab;
     private Color _typeColor; 
-    private ObjectPreview _previewPrefab;
+    private BuildPreview _previewPrefab;
 
     public ElementTypes Type => _type;
     public T Prefab => _prefab;
     public Color Color => _typeColor;
-    public ObjectPreview PreviewPrefab => _previewPrefab;
+    public BuildPreview PreviewPrefab => _previewPrefab;
 
-    public SpawnableObjectData(ElementTypes type, T prefab, Color typeColor, ObjectPreview previewPrefab)
+    public SpawnableObjectData(ElementTypes type, T prefab, Color typeColor, BuildPreview previewPrefab)
     {
         _type = type;
         _prefab = prefab;

@@ -1,9 +1,10 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ProjectileButton : MonoBehaviour
+public class ProjectileButton : MonoBehaviour, IPointerDownHandler
 {
     [SerializeField] private Image _image;
     [SerializeField] private TMP_Text _text;
@@ -18,13 +19,19 @@ public class ProjectileButton : MonoBehaviour
 
     private void OnEnable()
     {
-        _button.onClick.AddListener(ClickButton);
+    //    _button.onClick.AddListener(ClickButton);
     }
 
     private void OnDisable()
     {
-        _button.onClick.RemoveListener(ClickButton);
+    //    _button.onClick.RemoveListener(ClickButton);
     }
+
+    void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
+    {  
+        ClickButton();
+    }
+
 
     private void OnDestroy()
     {

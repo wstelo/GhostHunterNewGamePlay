@@ -8,7 +8,7 @@ public class EnemyMover : MonoBehaviour
 {
     private Vector3 _lastPositionOnSpline = Vector3.zero;
     private Spline _spline;
-    private float _minDistance = 0.01f;
+   // private float _minDistance = 0.01f;
     private float _splineValue = 0f;
     private float _speed = 2f;
     private int _allowedSegmentCountForNearestPoint = 10;

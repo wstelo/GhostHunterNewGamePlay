@@ -19,5 +19,7 @@ MonoBehaviour:
     type: 3}
   _hitEffect: {fileID: 0}
   _typeColor: {r: 0, g: 0.12345648, b: 1, a: 1}
-  _unitPreviewPrefab: {fileID: 6741835550949520439, guid: b1f4a3da46fa952459d574fb865c6e69,
+  _unitPreviewPrefab: {fileID: 3955171459684779457, guid: b1f4a3da46fa952459d574fb865c6e69,
+    type: 3}
+  _playerPrefab: {fileID: 7167793004651128857, guid: 69ee706bd9819534da60d09e32ac7962,
     type: 3}

@@ -5,15 +5,14 @@ using UnityEngine;
 public class UnitSpawnHandler
 {
     private UnitViewHandler _unitViewHandler;
-    private UnitPreviewer _unitPreviewer;
-    private LevelConfig _levelConfig;
+    private BuildConstructor _buildConstructor;
     private List<SpawnableObjectData<Ghost>> _unitsData = new List<SpawnableObjectData<Ghost>>();
 
-    public UnitSpawnHandler(UnitViewHandler unitViewHandler, UnitPreviewer unitPreviewer, List<SpawnableObjectData<Ghost>> unitsData)
+    public UnitSpawnHandler(UnitViewHandler unitViewHandler, BuildConstructor buildConstructor, List<SpawnableObjectData<Ghost>> unitsData)
     {
+        _buildConstructor = buildConstructor;
         _unitViewHandler = unitViewHandler;
         _unitViewHandler.ButtonClicked += SetPreview;
-        _unitPreviewer = unitPreviewer;
         _unitsData = unitsData;
     }
 
@@ -23,10 +22,8 @@ public class UnitSpawnHandler
         {
             if(item.Type == button.Type)
             {
-                Debug.Log("Bum");
-                _unitPreviewer.Activate(item.PreviewPrefab, item.Color);
+                _buildConstructor.CreateBuildPreview(item.PreviewPrefab, item.Color);
             }
         }
     }
-
 }

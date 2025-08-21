@@ -1,15 +1,15 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitPreviewer : MonoBehaviour
+public class BuildPreviewer : MonoBehaviour
 {
     [SerializeField] private LayerMask _terrainMask;
 
     private bool _isActiveConstructionMode = false;
     private Camera _camera;
+    private Coroutine _currentCoroutine;
 
-    public ObjectPreview CurrentPreviewBuilding { get; private set; }
+    public BuildPreview CurrentPreviewBuilding { get; private set; }
     public Vector3 CurrentMousePosition { get; private set; } = Vector3.zero;
 
     private void Awake()
@@ -17,32 +17,31 @@ public class UnitPreviewer : MonoBehaviour
         _camera = Camera.main;
     }
 
-    public void Activate(ObjectPreview _prefab, Color color)
+    public void Activate(BuildPreview _prefab, Color color)
     {
-        StartCoroutine(EnablePreviewMode(_prefab, color));
-    }
+        if(_currentCoroutine != null)
+        {
+            StopCoroutine( _currentCoroutine );
+        }
 
-    public void DisableConstructionMode()
-    {
-        _isActiveConstructionMode = false;
+        _currentCoroutine = StartCoroutine(EnablePreviewMode(_prefab, color));
     }
-
-    //public BuildPreview GetBuildPreview()
-    //{
-    //    return CurrentPreviewBuilding;
-    //}
 
     public void DisableBuildPreviewer()
     {
         _isActiveConstructionMode = false;
-       // _campFactory.DeleteBuildPreview(CurrentPreviewBuilding);
+
+        if(CurrentPreviewBuilding != null)
+        {
+            Destroy(CurrentPreviewBuilding.gameObject);///////////////////////
+        }                                                               
     }
 
-    private IEnumerator EnablePreviewMode(ObjectPreview _prefab, Color color)
+    private IEnumerator EnablePreviewMode(BuildPreview _prefab, Color color)
     {
         CurrentPreviewBuilding = null;
         _isActiveConstructionMode = true;
-        CurrentPreviewBuilding = Instantiate(_prefab, new Vector3(0,-30,0), Quaternion.identity);
+        CurrentPreviewBuilding = Instantiate(_prefab, new Vector3(0, -30, 0), Quaternion.identity);          //////////////////////////
         CurrentPreviewBuilding.Init(color);
 
         while (_isActiveConstructionMode)

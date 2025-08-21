@@ -7,11 +7,10 @@ using UnityEngine.Splines;
 
 public class LevelEntryPoint : MonoBehaviour
 {
-    [SerializeField] private ChargingPrjectileCellHandler _chargingPrjectileCellHandler;
     [SerializeField] private ProjectileButtonHandler _projectileButtonHandler;
     [SerializeField] private SplineContainer _spline;
     [SerializeField] private TextAsset _jsonLevelConfig;
-    [SerializeField] private UnitPreviewer _unitPreviewer;
+    [SerializeField] private BuildConstructor _buildConstructor;
 
     private List<SpawnableObjectData<Projectile>> _projectileData = new List<SpawnableObjectData<Projectile>>();
     private List<SpawnableObjectData<Ghost>> _unitsData = new List<SpawnableObjectData<Ghost>>();
@@ -32,13 +31,13 @@ public class LevelEntryPoint : MonoBehaviour
         _levelConfig = GetLevelConfig();
          _spawnableObjectDataFactory = new SpawnableObjectDataFactory(_configRepository);
         _unitsData = _spawnableObjectDataFactory.GetUnitsData();
+        _projectileData = _spawnableObjectDataFactory.GetProjectileData();
         _unitSpawnerHandler = new SpawnerHandler<Ghost>(_unitsData);
         _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _spline);
-        _projectileData = _spawnableObjectDataFactory.GetProjectileData();
         _cellHandler = new CellHandler(_projectileData, _enemySpawnHandler);
         _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler);
         //
-        _unitSpawnHandler = new UnitSpawnHandler(_unitViewHandler, _unitPreviewer, _unitsData);
+        _unitSpawnHandler = new UnitSpawnHandler(_unitViewHandler, _buildConstructor, _unitsData);
     }
 
     public void Init(LevelData currentLevel)
