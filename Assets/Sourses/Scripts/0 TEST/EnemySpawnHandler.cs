@@ -17,7 +17,7 @@ public class EnemySpawnHandler
     {
         _levelConfig = config;
         _spawnerHandler = spawnerHandler;
-        _elementTypes = GetCurrentTypes(config.ButtonValues);
+   //     _elementTypes = GetCurrentTypes(config.ButtonValues);
         _splineContainer = splineContainer;
         _spawnPosition = GetSpawnPoint(_splineContainer);
         _enemiesData = _data;

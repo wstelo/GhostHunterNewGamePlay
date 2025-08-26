@@ -1,17 +1,18 @@
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 [Serializable]
 [JsonObject(MemberSerialization.Fields)]
 public class LevelConfig
 {
-    public ElementTypes[,] ButtonValues;
+    public List<EnemiesLevelConfig> EnemiesLevelConfig;
     public int LevelNumber;
     public float LevelSpeed;
 
-    public LevelConfig(ElementTypes[,] buttonValues, int levelNumber, float levelSpeeed)
+    public LevelConfig(List<EnemiesLevelConfig> enemiesConfig, int levelNumber, float levelSpeeed)
     {
-        ButtonValues = buttonValues;
+        EnemiesLevelConfig = enemiesConfig;
         LevelNumber = levelNumber;
         LevelSpeed = levelSpeeed;
     }

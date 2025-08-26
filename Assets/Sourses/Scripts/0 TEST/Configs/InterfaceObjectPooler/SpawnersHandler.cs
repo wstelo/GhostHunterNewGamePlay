@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,11 +23,11 @@ public class SpawnersHandler<T> where T : MonoBehaviour, ISpawnableObject<T>
             var currentSpawner = spawner;
             spawnableObject = currentSpawner.EnableObject(position);
 
-            if(_spawnableObjectDatas.TryGetValue(requiredElement, out var data))
+            if (_spawnableObjectDatas.TryGetValue(requiredElement, out var data))
             {
                 spawnableObject.Init(data.Type, data.Color);
             }
-            
+
             return spawnableObject;
         }
 
