@@ -1,36 +1,39 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : SpawnableObject<Projectile>
+public class Projectile : MonoBehaviour, ISpawnableObject<Projectile>
 {
     [SerializeField] private ProjectileMover _mover;
     [SerializeField] private List<ParticleSystem> particleSystems;
 
     public ElementTypes Type;
-    
+
+    public event Action<Projectile> Disabled;
+
     private void OnEnable()
     {
-        _mover.TargetAchieved += Collected;
+        _mover.TargetAchieved += Disable;
     }
 
     private void OnDisable()
     {
-        _mover.TargetAchieved -= Collected;
+        _mover.TargetAchieved -= Disable;
     }
 
-    public override void Init(Color color, ElementTypes elementType)
+    public void Init(ElementTypes type, Color color)
     {
-        Type = elementType;
+        Type = type;
 
-        foreach (var particle in particleSystems)                  
+        foreach (var particle in particleSystems)
         {
             var main = particle.main;
             main.startColor = color;
         }
     }
 
-    public void SetTarget(Ghost target)
+    public void Disable()
     {
-            _mover.Init(target);
+        Disabled?.Invoke(this);
     }
 }

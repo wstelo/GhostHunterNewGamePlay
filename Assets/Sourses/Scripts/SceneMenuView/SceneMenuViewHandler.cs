@@ -8,7 +8,6 @@ public class SceneMenuViewHandler : MonoBehaviour
     [SerializeField] private Button _pauseButton;
     [SerializeField] private Button _resumeGameButton;
     [SerializeField] private Button _quitToMenuButton;
-    [SerializeField] private InputHandler _inputHandler;
     [SerializeField] private Image _pauseView;
 
     private SceneLoader _sceneLoader;

@@ -9,7 +9,7 @@ public class InputHandler : MonoBehaviour
     private const int RightMouseButtonIndex = 1;
 
     public event Action SelectButtonPressed;
-    public event Action CancelButtonUnpressed;
+    public event Action CancelButtonReleased;
 
     private void Update()
     {
@@ -20,7 +20,7 @@ public class InputHandler : MonoBehaviour
 
         if (Input.GetMouseButtonUp(LeftMouseButtonIndex))
         {
-            CancelButtonUnpressed?.Invoke();
+            CancelButtonReleased?.Invoke();
         }
     }
 }

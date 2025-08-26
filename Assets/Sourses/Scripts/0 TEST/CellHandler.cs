@@ -1,15 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class CellHandler
 {
-    private List<SpawnableObjectData<Projectile>> _spawnableObjectData = new List<SpawnableObjectData<Projectile>>();
+    private List<EnemyData> _spawnableObjectData = new List<EnemyData>();
     private List<ElementTypes> _levelTypes = new List<ElementTypes>();
     private EnemySpawnHandler _enemySpawnHandler;
 
-    public CellHandler(List<SpawnableObjectData<Projectile>> spawnableObjectDatas, EnemySpawnHandler enemySpawnHandler)
+    public CellHandler(List<EnemyData> spawnableObjectDatas, EnemySpawnHandler enemySpawnHandler)
     {
         _spawnableObjectData = spawnableObjectDatas;
         _enemySpawnHandler = enemySpawnHandler;
@@ -20,7 +19,6 @@ public class CellHandler
     {
         List<ProjectileCell> projectileCells = new List<ProjectileCell>();
         List<int> counts = new List<int>();
-        
 
         int repeatableElementsCount = GetRepeatableElements(_levelTypes).Count;
 
@@ -29,7 +27,7 @@ public class CellHandler
             ElementTypes firstElement = _levelTypes.First();
 
             counts = GenerateProjectileCount(repeatableElementsCount);
-
+            
             foreach (int count in counts)
             {
                 foreach (var elementData in _spawnableObjectData)
@@ -178,13 +176,14 @@ public class CellHandler
 
         foreach (ElementTypes elementType in elementTypes)
         {
+
             if (elementTypes.First() == elementType)
             {
                 repeatableElements.Add(elementType);
             }
             else
             {
-                return repeatableElements;
+                break;
             }
         }
 

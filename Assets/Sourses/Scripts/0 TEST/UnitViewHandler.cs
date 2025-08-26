@@ -28,7 +28,7 @@ public class UnitViewHandler
         if (_repeatableUnitCount == 0)
         {
             List<ProjectileCell> requiredCells = new List<ProjectileCell>();
-            requiredCells = _cellHandler.GetRequiredProjectileCells();
+            requiredCells = _cellHandler.GetRequiredProjectileCells();            
 
             if (requiredCells != null)
             {

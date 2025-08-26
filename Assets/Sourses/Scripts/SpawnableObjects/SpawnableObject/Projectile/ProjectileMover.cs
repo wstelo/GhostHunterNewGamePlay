@@ -7,7 +7,7 @@ public class ProjectileMover : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 1;
 
-    private Ghost _currentTarget;
+    private Enemy _currentTarget;
     private float _minDistanceToTarget = 1f;
     private Vector3 _offsetY = new Vector3(0,1,0);
 
@@ -22,12 +22,13 @@ public class ProjectileMover : MonoBehaviour
             if (transform.position.IsEnoughClose(_currentTarget.transform.position, _minDistanceToTarget))
             {
                 TargetAchieved?.Invoke();
-                _currentTarget.Collected();
+                _currentTarget.Disable();
+                _currentTarget = null;
             }
         }
     }
 
-    public void Init(Ghost target)
+    public void Init(Enemy target)
     {
         _currentTarget = target;
     }

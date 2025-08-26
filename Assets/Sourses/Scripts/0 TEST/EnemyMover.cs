@@ -6,15 +6,12 @@ using UnityEngine.Splines;
 
 public class EnemyMover : MonoBehaviour
 {
+    private int _allowedSegmentCountForNearestPoint = 10;
     private Vector3 _lastPositionOnSpline = Vector3.zero;
-    private Spline _spline;
-   // private float _minDistance = 0.01f;
     private float _splineValue = 0f;
     private float _speed = 2f;
-    private int _allowedSegmentCountForNearestPoint = 10;
     private float _splineLength;
-
-    public event Action SpawnLineWalked;
+    private Spline _spline;
 
     public void Init(SplineContainer splineContainer, float speed)
     {
@@ -38,11 +35,6 @@ public class EnemyMover : MonoBehaviour
 
             MoveToNextPoint();
         }
-
-        if(_splineValue >= GameStaticData.PercentOfLineToSpawnNewUit / 100)
-        {
-            SpawnLineWalked?.Invoke();
-        }
     }
 
     private void MoveToNextPoint()
@@ -58,7 +50,9 @@ public class EnemyMover : MonoBehaviour
         }
 
         _lastPositionOnSpline = SplineUtility.EvaluatePosition(_spline, _splineValue);
+        transform.LookAt(_lastPositionOnSpline);
         transform.position = _lastPositionOnSpline;
+        
     }
 
     private float GetNearbySplinePointAtPercent()

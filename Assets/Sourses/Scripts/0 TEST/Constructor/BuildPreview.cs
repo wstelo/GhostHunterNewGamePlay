@@ -1,6 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BuildPreview : MonoBehaviour
@@ -8,18 +7,14 @@ public class BuildPreview : MonoBehaviour
     [SerializeField] private MeshRenderer _meshRenderer;
     [SerializeField] private LayerMask _obstacleMask;
 
-    private List<Collider> _currentObstacles = new List<Collider>();
+    private UnitPlatform _currentPlatform;
 
-    private bool _isActiveInstallationMode = true;
-
-    public bool HasObstacle => _currentObstacles.Count > 0;
-
-    public event Action<BuildPreview> ConstructionEnded;
+    public bool IsOnPlatform => _currentPlatform != null;
 
     private Color _transparentColor;
     private Color _standartColor;
 
-    public void Init(Color color)
+    public void Init(Color color)                                   ////////////////////////////// Создать колорайзер?
     {
         _transparentColor = color;
         _standartColor = color;
@@ -27,45 +22,34 @@ public class BuildPreview : MonoBehaviour
         _meshRenderer.material.color = _transparentColor;
     }
 
-    public void EndedConstruction()
+    public UnitPlatform GetCurrentPlatform()
     {
-        ConstructionEnded?.Invoke(this);
+        return _currentPlatform;
     }
 
-    public void DisableInstallationMode()
+    private void OnTriggerEnter(Collider other)                           /////////////////////// убрать в Детектор
     {
-        _isActiveInstallationMode = false;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (_isActiveInstallationMode)
+        if (other.gameObject.TryGetComponent(out UnitPlatform platform))
         {
-            if (_obstacleMask.IsContains(other.gameObject.layer))
-            {
-                _currentObstacles.Add(other);
-            }
+            _currentPlatform = platform;
+        }
 
-            if (_currentObstacles.Count > 0)
-            {
-                _meshRenderer.material.color = _standartColor ;
-            }
+        if (_currentPlatform != null)
+        {
+            _meshRenderer.material.color = _standartColor;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (_isActiveInstallationMode)
+        if (other.gameObject.TryGetComponent(out UnitPlatform platform))
         {
-            if (_obstacleMask.IsContains(other.gameObject.layer))
-            {
-                _currentObstacles.Remove(other);
-            }
+            _currentPlatform = null;
+        }
 
-            if (_currentObstacles.Count == 0)
-            {
-                _meshRenderer.material.color = _transparentColor;
-            }
+        if (_currentPlatform == null)
+        {
+            _meshRenderer.material.color = _transparentColor;
         }
     }
 }
