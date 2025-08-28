@@ -6,13 +6,13 @@ using Newtonsoft.Json;
 [JsonObject(MemberSerialization.Fields)]
 public class LevelConfig
 {
-    public List<EnemiesLevelConfig> EnemiesLevelConfig;
+    public List<EnemiesLevelConfig> EnemiesLevelConfigs;
     public int LevelNumber;
     public float LevelSpeed;
 
     public LevelConfig(List<EnemiesLevelConfig> enemiesConfig, int levelNumber, float levelSpeeed)
     {
-        EnemiesLevelConfig = enemiesConfig;
+        EnemiesLevelConfigs = enemiesConfig;
         LevelNumber = levelNumber;
         LevelSpeed = levelSpeeed;
     }

@@ -5,9 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewUnitConfig", menuName = "NewUnitConfig / NewConfig")]
 public class EnemyConfig : ScriptableObject
 {
-    [SerializeField] private Enemy _unitPrefab;
+    [SerializeField] private EnemyTypes _enemyType;
+    [SerializeField] private Enemy _prefab;
     [SerializeField] private GameObject _hitEffect;
 
+    public EnemyTypes EnemyType => _enemyType;
     public GameObject HitEffect => _hitEffect;
-    public Enemy UnitPrefab => _unitPrefab;
+    public Enemy Prefab => _prefab;
 }

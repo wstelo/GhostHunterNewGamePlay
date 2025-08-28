@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
+using Newtonsoft.Json;
 
+[Serializable]
+[JsonObject(MemberSerialization.Fields)]
 public class EnemiesLevelConfig
 {
     public ElementTypes ElementType { get; private set; }

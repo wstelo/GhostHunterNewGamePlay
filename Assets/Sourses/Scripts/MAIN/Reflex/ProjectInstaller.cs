@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class ProjectInstaller : MonoBehaviour, IInstaller
 {
-    [SerializeField] private ConfigsRepository configRepository;
+    [SerializeField] private ConfigsRepository _configRepository;
+    [SerializeField] private DefenderConfig _currentDefenderConfig;
 
     public void InstallBindings(ContainerBuilder builder)
     {
-        builder.AddSingleton(configRepository);
+        builder.AddSingleton(_configRepository);
+        builder.AddSingleton(_currentDefenderConfig);
     }
 }

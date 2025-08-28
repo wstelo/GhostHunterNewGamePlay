@@ -224,7 +224,7 @@ public class MainWindow : EditorWindow
 
         try
         {
-            _buttonValues = GetEnemyCells(json.EnemiesLevelConfig);
+            _buttonValues = GetEnemyCells(json.EnemiesLevelConfigs);
             _levelNumber = json.LevelNumber;
             _levelSpeed = json.LevelSpeed;
 

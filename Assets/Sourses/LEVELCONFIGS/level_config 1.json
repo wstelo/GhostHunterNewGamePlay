@@ -1,1 +1,1 @@
-{"ButtonValues":[[0,0,0,0,0,0,1,1,1,1,1,1,1],[1,1,1,1,1,1,0,0,0,0,0,0,0],[0,0,0,0,1,1,1,1,1,0,0,0,0],[1,1,1,1,0,0,0,0,0,1,1,1,1],[0,0,0,0,1,1,1,1,1,0,0,0,0],[1,1,1,0,0,0,1,1,1,0,0,0,1],[1,0,0,1,1,0,0,1,1,0,1,1,0],[0,1,1,1,1,0,0,0,1,1,1,1,0],[0,1,1,0,0,1,1,0,0,1,1,0,0],[0,1,0,1,0,1,0,1,0,1,0,1,0]],"LevelNumber":1,"LevelSpeed":1}
+{"EnemiesLevelConfigs":[{"<ElementType>k__BackingField":1,"<EnemyType>k__BackingField":1,"<Count>k__BackingField":7},{"<ElementType>k__BackingField":2,"<EnemyType>k__BackingField":1,"<Count>k__BackingField":6}],"LevelNumber":1,"LevelSpeed":1.0}
