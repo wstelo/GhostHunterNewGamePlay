@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnerHandler
 {
-    private SpawnableObjectFactory _spawnableObjectFactory;       //////////// вынести в EntryPoint
+    private SpawnableObjectFactory _spawnableObjectFactory;       ////////////           EntryPoint
     private Dictionary<EnemyTypes, SpawnableObjectSpawner<Enemy>> _enemySpawners = new Dictionary<EnemyTypes, SpawnableObjectSpawner<Enemy>>();
     private Dictionary<EnemyTypes, EnemyData> _enemiesData = new Dictionary<EnemyTypes, EnemyData>();
     private Dictionary<DefenderTypes, SpawnableObjectSpawner<Defender>> _defenderSpawners = new Dictionary<DefenderTypes, SpawnableObjectSpawner<Defender>>();
@@ -21,78 +22,49 @@ public class SpawnerHandler
         SetSpawners(enemiesData, defenderData, projectileData);
     }
 
-    //public TReturn Spawn <TKey, TReturn>(Dictionary<TKey, object> data, TKey requiredTypes, ElementTypes reqiredElements, Vector3 position, int projectileCount)            /////////////////////////// дубляж 
-    //{
-    //    TReturn spawnableObject;
-
-    //    if (data.TryGetValue(requiredTypes, out var spawner))
-    //    {         
-    //        spawnableObject = spawner.EnableObject(position);
-
-    //        if (_defendersData.TryGetValue(data, out var data))
-    //        {
-    //            spawnableObject.Init(reqiredElements, GetColorByElementType(reqiredElements), this, projectileCount);                 ////////////////////////////// передаём спавнер юниту
-    //        }
-
-    //        return spawnableObject;
-    //    }
-
-    //    return default(TReturn);
-    //}
-
-    public Defender SpawnDefender(DefenderTypes requiredTypes, ElementTypes reqiredElements, Vector3 position, int projectileCount)            /////////////////////////// дубляж 
+    public Defender SpawnDefender(DefenderTypes requiredType, ElementTypes requiredElement, Vector3 position, int projectileCount)
     {
-        Defender spawnableObject;
-
-        if (_defenderSpawners.TryGetValue(requiredTypes, out var spawner))
-        {
-            var currentSpawner = spawner;
-            spawnableObject = currentSpawner.EnableObject(position);
-
-            if (_defendersData.TryGetValue(requiredTypes, out var data))
-            {
-                spawnableObject.Init(reqiredElements, GetColorByElementType(reqiredElements), this, projectileCount);                 ////////////////////////////// передаём спавнер юниту
-            }
-
-            return spawnableObject;
-        }
-
-        return null;
+        return Spawn(
+            _defenderSpawners,
+            requiredType,
+            position,
+            defender => defender.Init(requiredElement, GetColorByElementType(requiredElement), this, projectileCount));
     }
 
-    public Enemy SpawnEnemy(EnemyTypes requiredTypes, ElementTypes reqiredElements, Vector3 position)
+    public Enemy SpawnEnemy(EnemyTypes requiredType, ElementTypes reqiredElement, Vector3 position)
     {
-        Enemy spawnableObject;
-
-        if (_enemySpawners.TryGetValue(requiredTypes, out var spawner))
-        {
-            var currentSpawner = spawner;
-            spawnableObject = currentSpawner.EnableObject(position);
-
-            if (_enemiesData.TryGetValue(requiredTypes, out var data))
-            {
-                spawnableObject.Init(reqiredElements, data.EnemyType, GetColorByElementType(reqiredElements));
-            }
-
-            return spawnableObject;
-        }
-
-        return null;
+        return Spawn(
+            _enemySpawners,
+            requiredType,
+            position,
+            enemy => enemy.Init(reqiredElement, requiredType, GetColorByElementType(reqiredElement)));
     }
 
-    public Projectile SpawnProjectile(ProjectileTypes requiredType,  ElementTypes reqiredElements, Vector3 position)
+    public Projectile SpawnProjectile(ProjectileTypes requiredType, ElementTypes requiredElements, Vector3 position)
     {
-        Projectile spawnableObject;
+        return Spawn(
+            _projectileSpawners,
+            requiredType,
+            position,
+            projectile => projectile.Init(requiredElements, GetColorByElementType(requiredElements)));
+    }
 
-        if (_projectileSpawners.TryGetValue(requiredType, out var spawner))
+    private TReturn Spawn<TKey, TReturn>(
+    Dictionary<TKey, SpawnableObjectSpawner<TReturn>> spawners,
+    TKey requiredTypes,
+    Vector3 position,
+    Action<TReturn> initCallback)
+    where TReturn : MonoBehaviour, ISpawnableObject<TReturn>
+    {
+        if (spawners.TryGetValue(requiredTypes, out var spawner))
         {
-            var currentSpawner = spawner;
-            spawnableObject = currentSpawner.EnableObject(position);
+            var spawnableObject = spawner.EnableObject(position);
 
-            if (_projectileData.TryGetValue(requiredType, out var data))
+            if (spawnableObject != null)
             {
-                spawnableObject.Init(reqiredElements, GetColorByElementType(reqiredElements));
+                initCallback(spawnableObject);
             }
+
             return spawnableObject;
         }
 
@@ -112,14 +84,14 @@ public class SpawnerHandler
 
         foreach (var item in projectileData)
         {
-            foreach(var currentItem in defendersData.Prefab.ProjectilesTypes)
+            foreach (var currentItem in defendersData.Prefab.ProjectilesTypes)
             {
                 if (item.ProjectileType == currentItem)
                 {
                     _projectileSpawners.Add(currentItem, new SpawnableObjectSpawner<Projectile>(_spawnableObjectFactory, item.Prefab));
                     _projectileData.Add(currentItem, item);
                 }
-            }                   
+            }
         }
     }
 
