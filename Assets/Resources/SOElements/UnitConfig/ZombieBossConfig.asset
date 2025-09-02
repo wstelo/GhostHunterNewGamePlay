@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff2ca7492eab4464790eb312d0640364, type: 3}
+  m_Name: ZombieBossConfig
+  m_EditorClassIdentifier: 
+  _enemyType: 2
+  _prefab: {fileID: 1656653168093438469, guid: 0da3b36f1e23e4046932a7f193c01f41, type: 3}
+  _hitEffect: {fileID: 0}

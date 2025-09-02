@@ -5,9 +5,7 @@ using UnityEngine.Splines;
 
 public class EnemySpawnHandler
 {
-    private List<EnemyData> _enemiesData;
-    private SpawnerHandler _spawnerHandler;
-    private List<ElementTypes> _elementTypes;////////////////
+    private SpawnersHandler _spawnerHandler;
     private SplineContainer _splineContainer;
     private LevelConfig _levelConfig;
     private Vector3 _spawnPosition;
@@ -16,13 +14,12 @@ public class EnemySpawnHandler
     private int _spawnedEnemyCount = 0;
     private int _currentEnemiesConfigIndex = 0;
 
-    public EnemySpawnHandler(LevelConfig config, SpawnerHandler spawnerHandler, SplineContainer splineContainer, List<EnemyData> _data, EnemySpawnPointDetector enemySpawnDetector)
+    public EnemySpawnHandler(LevelConfig config, SpawnersHandler spawnerHandler, SplineContainer splineContainer, EnemySpawnPointDetector enemySpawnDetector)
     {
         _levelConfig = config;
         _spawnerHandler = spawnerHandler;
         _splineContainer = splineContainer;
         _spawnPosition = GetSpawnPoint(_splineContainer);
-        _enemiesData = _data;
         _enemySpawnDetector = enemySpawnDetector;
         _enemySpawnDetector.Detected += CreateObject;
         _enemySpawnDetector.Destroyed += Unsubscribe;
@@ -32,12 +29,17 @@ public class EnemySpawnHandler
 
     private void CreateObject()
     {
-        if (_currentEnemiesConfigIndex < _levelConfig.EnemiesLevelConfigs.Count )
+        if (_currentEnemiesConfigIndex < _levelConfig.EnemiesLevelConfigs.Count)
         {
             EnemiesLevelConfig currentEnemy = _levelConfig.EnemiesLevelConfigs[_currentEnemiesConfigIndex];
             
             Enemy enemy = _spawnerHandler.SpawnEnemy(currentEnemy.EnemyType, currentEnemy.ElementType, _spawnPosition);
-            enemy.SetMover(_splineContainer, _levelConfig.LevelSpeed);
+
+            if(enemy != null)
+            {
+                enemy.SetMover(_splineContainer, _levelConfig.LevelSpeed);
+            }
+                       
             _spawnedEnemyCount++;
 
             if (_spawnedEnemyCount >= currentEnemy.Count)

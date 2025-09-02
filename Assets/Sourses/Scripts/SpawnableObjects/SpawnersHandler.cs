@@ -1,45 +1,114 @@
-//using System.Collections.Generic;
-//using UnityEngine;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-//public class SpawnersHandler<T> where T : MonoBehaviour, ISpawnableObject<T>
-//{
-//    private SpawnableObjectFactory _spawnableObjectFactory;
-//    private Dictionary<ElementTypes, SpawnableObjectSpawner<T>> _spawnableObjectSpawners = new Dictionary<ElementTypes, SpawnableObjectSpawner<T>>();
-//    private Dictionary<ElementTypes, SpawnableObjectData<T>> _spawnableObjectDatas = new Dictionary<ElementTypes, SpawnableObjectData<T>>();
+public class SpawnersHandler
+{
+    private SpawnableObjectFactory _spawnableObjectFactory;
+    private Dictionary<EnemyTypes, SpawnableObjectSpawner<Enemy>> _enemySpawners = new Dictionary<EnemyTypes, SpawnableObjectSpawner<Enemy>>();
+    private Dictionary<DefenderTypes, SpawnableObjectSpawner<Defender>> _defenderSpawners = new Dictionary<DefenderTypes, SpawnableObjectSpawner<Defender>>();
+    private Dictionary<ProjectileTypes, SpawnableObjectSpawner<Projectile>> _projectileSpawners = new Dictionary<ProjectileTypes, SpawnableObjectSpawner<Projectile>>();
 
-//    public SpawnersHandler(IEnumerable<SpawnableObjectData<T>> spawnableObjectData)
-//    {
-//        _spawnableObjectFactory = new SpawnableObjectFactory();
+    private Dictionary<EnemyTypes, EnemyData> _enemiesData = new Dictionary<EnemyTypes, EnemyData>();
+    private Dictionary<DefenderTypes, DefenderData> _defendersData = new Dictionary<DefenderTypes, DefenderData>();
+    private Dictionary<ProjectileTypes, ProjectileData> _projectileData = new Dictionary<ProjectileTypes, ProjectileData>();
 
-//        SetSpawnersData(spawnableObjectData);
-//    }
+    private List<ElementConfig> _elementConfigs;
 
-//    public T Spawn(ElementTypes requiredElement, Vector3 position)
-//    {
-//        T spawnableObject;
+    public SpawnersHandler(List<EnemyData> enemiesData, DefenderData defenderData, List<ProjectileData> projectileData, List<ElementConfig> elementConfigs)
+    {
+        _spawnableObjectFactory = new SpawnableObjectFactory();
+        _elementConfigs = elementConfigs;
 
-//        if (_spawnableObjectSpawners.TryGetValue(requiredElement, out var spawner))
-//        {
-//            var currentSpawner = spawner;
-//            spawnableObject = currentSpawner.EnableObject(position);
+        SetParameters(enemiesData, defenderData, projectileData);
+    }
 
-//            if (_spawnableObjectDatas.TryGetValue(requiredElement, out var data))
-//            {
-//                spawnableObject.Init(data.ElementType, data.Color);
-//            }
+    private TReturn Spawn<TKey, TReturn>(
+    Dictionary<TKey, SpawnableObjectSpawner<TReturn>> spawners,
+    TKey requiredTypes,
+    Vector3 position,
+    Action<TReturn> initCallback)
+    where TReturn : MonoBehaviour, ISpawnableObject<TReturn>
+    {
+        if (spawners.TryGetValue(requiredTypes, out var spawner))
+        {
+            var spawnableObject = spawner.EnableObject(position);
 
-//            return spawnableObject;
-//        }
+            if (spawnableObject != null)
+            {
+                initCallback(spawnableObject);
+            }
 
-//        return null;
-//    }
+            return spawnableObject;
+        }
 
-//    private void SetSpawnersData(IEnumerable<SpawnableObjectData<T>> spawnableObjectData)
-//    {
-//        foreach (var data in spawnableObjectData)
-//        {
-//            _spawnableObjectSpawners.Add(data.ElementType, new SpawnableObjectSpawner<T>(_spawnableObjectFactory, data.Prefab));
-//            _spawnableObjectDatas.Add(data.ElementType, data);
-//        }
-//    }
-//}
+        return null;
+    }
+
+    public Defender SpawnDefender(DefenderTypes requiredType, ElementTypes requiredElement, Vector3 position, int projectileCount)
+    {
+        _defendersData.TryGetValue(requiredType, out DefenderData data);
+
+        return Spawn(
+            _defenderSpawners,
+            requiredType,
+            position,
+            defender => defender.Init(requiredElement, GetColorByElementType(requiredElement), this, projectileCount, data));
+    }
+
+    public Enemy SpawnEnemy(EnemyTypes requiredType, ElementTypes reqiredElement, Vector3 position)
+    {
+        return Spawn(
+            _enemySpawners,
+            requiredType,
+            position,
+            enemy => enemy.Init(reqiredElement, requiredType, GetColorByElementType(reqiredElement)));
+    }
+
+    public Projectile SpawnProjectile(ProjectileTypes requiredType, ElementTypes requiredElements, Vector3 position)
+    {
+        return Spawn(
+            _projectileSpawners,
+            requiredType,
+            position,
+            projectile => projectile.Init(requiredElements, GetColorByElementType(requiredElements)));
+    }
+
+    private void SetParameters(List<EnemyData> enemiesData, DefenderData defendersData, List<ProjectileData> projectileData)
+    {
+        foreach (var item in enemiesData)
+        {
+            _enemySpawners.Add(item.EnemyType, new SpawnableObjectSpawner<Enemy>(_spawnableObjectFactory, item.Prefab));
+            _enemiesData.Add(item.EnemyType, item);
+        }
+
+        _defenderSpawners.Add(defendersData.DefenderType, new SpawnableObjectSpawner<Defender>(_spawnableObjectFactory, defendersData.Prefab));
+        _defendersData.Add(defendersData.DefenderType, defendersData);
+
+        foreach (var item in projectileData)
+        {
+            if (item.ProjectileType == defendersData.Prefab.ProjectileType)
+            {
+                _projectileSpawners.Add(item.ProjectileType, new SpawnableObjectSpawner<Projectile>(_spawnableObjectFactory, item.Prefab));
+                _projectileData.Add(item.ProjectileType, item);
+            }
+        }
+    }
+
+    private Color GetColorByElementType(ElementTypes elementType)
+    {
+        Color color = Color.white;
+
+        foreach (var item in _elementConfigs)
+        {
+            if (item.Type == elementType)
+            {
+                color = item.Color;
+
+                break;
+            }
+        }
+
+        return color;
+    }
+}

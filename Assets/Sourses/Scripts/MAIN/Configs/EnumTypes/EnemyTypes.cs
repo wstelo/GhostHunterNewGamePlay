@@ -6,5 +6,5 @@ public enum EnemyTypes
 {
     Ghost,
     Zombie,
-    ZombieBoss
+    Zombie_Boss
 }

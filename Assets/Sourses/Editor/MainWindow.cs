@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,9 +12,13 @@ public class MainWindow : EditorWindow
 
     private EditorWindowEnemyCell[,] _buttonValues;
     private int _ñellsCount = 1;
-    private float _levelSpeed = 0.1f;
+    private float _levelSpeed = 1f;
     private Vector2 _scrollPosition;
     private int _levelNumber = 0;
+
+    //private readonly static EnemyTypes[] EnemyTypesArray = (EnemyTypes[])Enum.GetValues(typeof(EnemyTypes));
+    private readonly static EnemyTypes[] NormalEnemyTypesArray = EnemyTypesFilter.GetEnemyCategories().normal;
+    private EnemyTypes _defaultEnemyType = EnemyTypes.Ghost;
 
     private readonly int _maxRowLength = 13;
 
@@ -30,11 +35,66 @@ public class MainWindow : EditorWindow
         InitializeButtonValues();
     }
 
+
+
     private void OnGUI()
     {
-        Debug.Log(_buttonValues.Length);
         GUILevelInfo();
+        EditorGUILayout.Space(30);
 
+        EditorGUILayout.LabelField($"Âûáåðèòå äåôîëòíûé òèï ìîíñòðîâ íà óðîâíå.", GUILayout.Width(800));         ////////////////////////////////
+        EditorGUILayout.Space(5);
+
+        EditorGUILayout.BeginHorizontal();
+        {
+            EnemyTypes oldDefaultType = _defaultEnemyType;
+
+            foreach (EnemyTypes type in NormalEnemyTypesArray)
+            {
+                if (GUILayout.Button($"{type}", GUILayout.Width(100), GUILayout.Height(70)))
+                {               
+                    _defaultEnemyType = type;
+                }
+            }
+
+            if (oldDefaultType != _defaultEnemyType)
+            {
+                ApplyDefaultEnemyTypeToAllCells();
+            }
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space(30);
+
+        GUIEnemySelectedButton();
+
+        GUISaveLoadButtons();
+    }
+
+    private void ApplyDefaultEnemyTypeToAllCells()
+    {
+        if (_buttonValues == null) return;
+
+        for (int i = 0; i < _buttonValues.GetLength(0); i++)
+        {
+            for (int j = 0; j < _buttonValues.GetLength(1); j++)
+            {
+                if (_buttonValues[i, j] != null)
+                {
+                    _buttonValues[i, j].SetParameters(
+                        _buttonValues[i, j].ElementType,
+                        _defaultEnemyType,
+                        _buttonValues[i, j].Count
+                    );
+                }
+            }
+        }
+
+        Repaint();
+    }
+
+    private void GUIEnemySelectedButton()
+    {
         int oldCellsCount = _ñellsCount;
         _ñellsCount = EditorGUILayout.IntSlider("Cells Count", _ñellsCount, SliderMinValue, SliderMaxValue, GUILayout.Width(600), GUILayout.Height(20));
         EditorGUILayout.Space(30);
@@ -76,13 +136,11 @@ public class MainWindow : EditorWindow
         }
 
         EditorGUILayout.EndScrollView();
-
-        GUISaveLoadButtons();
     }
 
     private void GUILevelInfo()
     {
-        EditorGUILayout.LabelField($"ÏÐÈ ÄÎÁÀÂËÅÍÈÈ ElementTypes (Öâåòà) - ÍÅÎÁÕÎÄÈÌÎ äîáàâèòü â GUIColorizer", GUILayout.Width(800));
+        EditorGUILayout.LabelField($"ÏÐÈ ÄÎÁÀÂËÅÍÈÈ ElementTypes (Öâåòà) - ÍÅÎÁÕÎÄÈÌÎ äîáàâèòü â GUIColorizer", GUILayout.Width(800));         ////////////////////////////////
         EditorGUILayout.Space(30);
 
         EditorGUILayout.BeginHorizontal();
@@ -136,6 +194,7 @@ public class MainWindow : EditorWindow
         _ñellsCount = 1;
         _levelNumber = 0;
         _levelSpeed = 0;
+        _defaultEnemyType = EnemyTypes.Ghost;
 
         InitializeButtonValues();
 
@@ -177,7 +236,7 @@ public class MainWindow : EditorWindow
                     }
                     else
                     {
-                        newArray[i, j] = new EditorWindowEnemyCell(ElementTypes.Red, EnemyTypes.Ghost, 1);
+                        newArray[i, j] = new EditorWindowEnemyCell(ElementTypes.Red, _defaultEnemyType, 1);
                     }
                 }
             }
@@ -188,7 +247,7 @@ public class MainWindow : EditorWindow
                 {
                     if (newArray[i, j] == null)
                     {
-                        newArray[i, j] = new EditorWindowEnemyCell(ElementTypes.Red, EnemyTypes.Ghost, 1);
+                        newArray[i, j] = new EditorWindowEnemyCell(ElementTypes.Red, _defaultEnemyType, 1);
                     }
                 }
             }
@@ -202,7 +261,12 @@ public class MainWindow : EditorWindow
         Vector2 mousePosition = Event.current.mousePosition;
         Vector2 screenPosition = GUIUtility.GUIToScreenPoint(mousePosition);
 
-        TypeSelectWindow.ShowWindow(this, row, column, screenPosition);
+        EditorWindowEnemyCell currentCell = _buttonValues[row, column];
+        ElementTypes currentElement = currentCell.ElementType;
+        EnemyTypes currentEnemy = currentCell.EnemyType;
+        int currentCount = currentCell.Count;
+
+        TypeSelectWindow.ShowWindow(this, row, column, screenPosition, currentElement, currentEnemy, currentCount);
     }
 
     public void SetTileType(int row, int column, ElementTypes elementType, EnemyTypes enemyType, int count)

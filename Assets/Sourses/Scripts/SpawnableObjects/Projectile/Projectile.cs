@@ -7,7 +7,7 @@ public class Projectile : MonoBehaviour, ISpawnableObject<Projectile>
     [SerializeField] private ProjectileMover _mover;
     [SerializeField] private List<ParticleSystem> particleSystems;
 
-    public ElementTypes Type;
+    public ElementTypes Type { get; private set; }
 
     public event Action<Projectile> Disabled;
 

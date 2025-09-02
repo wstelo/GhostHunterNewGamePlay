@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -6,11 +8,11 @@ public class TypeSelectWindow : EditorWindow
 {
     private static TypeSelectWindow _selectWindow;
     private readonly static ElementTypes[] ElementTypesArray = (ElementTypes[])Enum.GetValues(typeof(ElementTypes));
-    private readonly static EnemyTypes[] EnemyTypesArray = (EnemyTypes[])Enum.GetValues(typeof(EnemyTypes));
-    private readonly static int ElementTypesLength = Enum.GetValues(typeof(ElementTypes)).Length;
-    private readonly static int EnemyTypesLength = Enum.GetValues(typeof(EnemyTypes)).Length;
 
-    private Vector2 _scrollPosition;
+    private readonly static EnemyTypes[] EnemyTypesArray = (EnemyTypes[])Enum.GetValues(typeof(EnemyTypes));
+    private readonly static EnemyTypes[] NormalEnemyTypesArray = EnemyTypesFilter.GetEnemyCategories().normal;
+    private readonly static EnemyTypes[] BossEnemyTypesArray = EnemyTypesFilter.GetEnemyCategories().boss;
+
     private MainWindow _mainWindow;
     private int _currentRow = 0;
     private int _currentColumn = 0;
@@ -18,13 +20,18 @@ public class TypeSelectWindow : EditorWindow
     private int _minUnitCount = 1;
     private int _maxUnitCount = 20;
 
-    private ElementTypes _selectedElement = ElementTypes.Red; 
-    private EnemyTypes _selectedEnemy = EnemyTypes.Ghost;
+    private ElementTypes _selectedElement = ElementTypes.Red;
+    private EnemyTypes _selectedType;
+    private EnemyTypes _defaultTypeForSelectedCell;
     private int _unitCount = 0;
-    private bool _hasSelectedElement = false;
-    private bool _hasSelectedEnemy = false;
+    private bool _hasSelectedSingleElement = false;
+    private bool _hasSelectedType = false;
 
-    public static void ShowWindow(MainWindow mainWindow, int row, int column, Vector2 screenPosition)
+    private bool _isMultiple = false;
+    private List<ElementTypes> _selectedMultiplyElements = new List<ElementTypes>();
+    private bool _hasSelectedMultiplyElement = false;
+
+    public static void ShowWindow(MainWindow mainWindow, int row, int column, Vector2 screenPosition, ElementTypes currentElement, EnemyTypes currentEnemy, int currentCount)
     {
         if (_selectWindow != null)
         {
@@ -33,8 +40,7 @@ public class TypeSelectWindow : EditorWindow
 
         _selectWindow = CreateInstance<TypeSelectWindow>();
         _selectWindow.titleContent = new GUIContent("Select Element Type");
-        _selectWindow.Initialize(mainWindow, row, column);
-
+        _selectWindow.Initialize(mainWindow, row, column, currentElement, currentEnemy, currentCount);
 
         _selectWindow.position = CalculateWindowPosition(screenPosition);
         _selectWindow.minSize = new Vector2(900, 800);
@@ -42,23 +48,19 @@ public class TypeSelectWindow : EditorWindow
 
         _selectWindow.Show();
     }
-
-    private static Rect CalculateWindowPosition(Vector2 screenPosition)
-    {
-        float width = 1000;
-        float height = 800;
-
-        float x = Mathf.Min(screenPosition.x, Screen.currentResolution.width - width - 20);
-        float y = Mathf.Min(screenPosition.y + 20, Screen.currentResolution.height - height - 20);
-
-        return new Rect(x, y, width, height);
-    }
-
-    public void Initialize(MainWindow mainWindow, int row, int column)
+    public void Initialize(MainWindow mainWindow, int row, int column, ElementTypes currentElement, EnemyTypes currentEnemy, int currentCount)
     {
         _mainWindow = mainWindow;
         _currentRow = row;
         _currentColumn = column;
+
+        _selectedElement = currentElement;
+        _selectedType = currentEnemy;
+        _defaultTypeForSelectedCell = currentEnemy;
+        _unitCount = currentCount;
+
+        _hasSelectedSingleElement = true;
+        _hasSelectedType = true;
     }
 
     private void OnGUI()
@@ -66,18 +68,79 @@ public class TypeSelectWindow : EditorWindow
         EditorGUILayout.LabelField($"Select type for cell at row {_currentRow + 1}, column {_currentColumn + 1}", EditorStyles.boldLabel);
         EditorGUILayout.Space(10);
 
-        GUIElementButtons();
-        GUIENemyButtons();
-        GUICountSelector();
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.LabelField("Enemy Type Selection:", EditorStyles.boldLabel, GUILayout.Width(150));
+            _isMultiple = EditorGUILayout.Toggle("Multiple", _isMultiple, GUILayout.Width(150));
+        }
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Space(30);
 
-        EditorGUILayout.Space(10);
+        if (_isMultiple)
+        {
+            _unitCount = 1;
+            _selectedType = BossEnemyTypesArray.First();
+            BossEnemySelector();
+        }
+        else
+        {
+            _selectedType = _defaultTypeForSelectedCell;
+            StandartEnemySelector();
+        }
 
         GUISaveOrCancelButton();
     }
 
+    private void BossEnemySelector()
+    {
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.LabelField("Current:", GUILayout.Width(60));
+
+            // Показываем выбранные элементы для босса
+            string elementsText = _selectedMultiplyElements.Count > 0
+                ? string.Join(", ", _selectedMultiplyElements)
+                : "None";
+            EditorGUILayout.LabelField($"Elements: {elementsText}", GUILayout.Width(500));
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.LabelField($"Enemy: {_selectedType}", GUILayout.Width(150));
+            EditorGUILayout.LabelField($"Count: {_unitCount}", GUILayout.Width(80));
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space(10);
+       
+        GUIMultipleElementButtons();
+        GUIEnemyTypeButtons(BossEnemyTypesArray);
+    }
+
+    private void StandartEnemySelector()
+    {
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.LabelField("Current:", GUILayout.Width(60));
+            EditorGUILayout.LabelField($"Element: {_selectedElement}", GUILayout.Width(150));
+            EditorGUILayout.LabelField($"Enemy: {_selectedType}", GUILayout.Width(150));
+            EditorGUILayout.LabelField($"Count: {_unitCount}", GUILayout.Width(80));
+        }
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space(10);
+
+        GUISingleElementButtons();
+        GUIEnemyTypeButtons(NormalEnemyTypesArray);
+        GUICountSelector();
+
+        EditorGUILayout.Space(10);
+    }
+
     private void ApplySelectionParameters()
     {
-        _mainWindow.SetTileType(_currentRow, _currentColumn, _selectedElement, _selectedEnemy, _unitCount);
+        _mainWindow.SetTileType(_currentRow, _currentColumn, _selectedElement, _selectedType, _unitCount);
     }
 
     private void GUISaveOrCancelButton()
@@ -87,7 +150,7 @@ public class TypeSelectWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         {
-            GUI.enabled = _hasSelectedElement && _hasSelectedEnemy; 
+            GUI.enabled = _hasSelectedSingleElement && _hasSelectedType ;
 
             if (GUILayout.Button("Apply", GUILayout.Height(30)))
             {
@@ -95,7 +158,7 @@ public class TypeSelectWindow : EditorWindow
                 Close();
             }
 
-            GUI.enabled = true; // Всегда включаем кнопку отмены
+            GUI.enabled = true;
 
             if (GUILayout.Button("Cancel", GUILayout.Height(30)))
             {
@@ -104,7 +167,7 @@ public class TypeSelectWindow : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
 
-        if (!_hasSelectedElement || !_hasSelectedEnemy)
+        if (!_hasSelectedSingleElement || !_hasSelectedType)
         {
             EditorGUILayout.HelpBox("Please select both Element Type and Enemy Type", MessageType.Info);
         }
@@ -116,7 +179,7 @@ public class TypeSelectWindow : EditorWindow
         _unitCount = EditorGUILayout.IntSlider("Cells Count", _unitCount, _minUnitCount, _maxUnitCount, GUILayout.Width(600), GUILayout.Height(20));
     }
 
-    private void GUIENemyButtons()
+    private void GUIEnemyTypeButtons(EnemyTypes[] typesArray)
     {
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField($"Select the EnemyType", EditorStyles.boldLabel);
@@ -126,7 +189,7 @@ public class TypeSelectWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         {
-            for (int i = 0; i < EnemyTypesLength; i++)
+            for (int i = 0; i < typesArray.Length; i++)
             {
                 if (currentColumn >= _columnsInRow)
                 {
@@ -135,18 +198,18 @@ public class TypeSelectWindow : EditorWindow
                     currentColumn = 0;
                 }
 
-                bool isSelected = _hasSelectedEnemy && _selectedEnemy == EnemyTypesArray[i];
+                bool isSelected = _hasSelectedType && _selectedType == typesArray[i];
                 GUIStyle buttonStyle = isSelected ? GUIColorizer.GetSelectedButtonStyle() : GUI.skin.button;
 
-                if (GUILayout.Button(EnemyTypesArray[i].ToString(), buttonStyle, GUILayout.Width(80), GUILayout.Height(40)))
+                if (GUILayout.Button(typesArray[i].ToString(), buttonStyle, GUILayout.Width(80), GUILayout.Height(40)))
                 {
-                    _selectedEnemy = EnemyTypesArray[i];
-                    _hasSelectedEnemy = true;
+                    _selectedType = typesArray[i];
+                    _hasSelectedType = true;
                 }
 
                 currentColumn++;
 
-                if (i < ElementTypesLength - 1 && currentColumn < _columnsInRow)
+                if (i < ElementTypesArray.Length - 1 && currentColumn < _columnsInRow)
                 {
                     GUILayout.Space(5);
                 }
@@ -154,13 +217,70 @@ public class TypeSelectWindow : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
 
-        if(_hasSelectedEnemy)
+        if (_hasSelectedType)
         {
-            EditorGUILayout.LabelField($"Selected: {_selectedEnemy}", EditorStyles.helpBox);
+            EditorGUILayout.LabelField($"Selected: {_selectedType}", EditorStyles.helpBox);
         }
     }
 
-    private void GUIElementButtons()
+    private void GUIMultipleElementButtons()
+    {
+        EditorGUILayout.Space(20);
+        EditorGUILayout.LabelField($"Select Multiple Element Types (for Boss)", EditorStyles.boldLabel);
+        EditorGUILayout.Space(10);
+
+        int currentColumn = 0;
+
+        EditorGUILayout.BeginHorizontal();
+        {
+            for (int i = 0; i < ElementTypesArray.Length; i++)
+            {
+                if (currentColumn >= _columnsInRow)
+                {
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.BeginHorizontal();
+                    currentColumn = 0;
+                }
+
+                bool isSelected = _selectedMultiplyElements.Contains(ElementTypesArray[i]);
+                GUIStyle buttonStyle = isSelected
+                    ? GUIColorizer.GetSelectedButtonStyle(GUIColorizer.GetTileColor(ElementTypesArray[i]))
+                    : GetButtonStyle(ElementTypesArray[i]);
+
+                if (GUILayout.Button(ElementTypesArray[i].ToString(), buttonStyle, GUILayout.Width(80), GUILayout.Height(40)))
+                {
+                    if (isSelected)
+                    {                       
+                        _selectedMultiplyElements.Remove(ElementTypesArray[i]);
+                    }
+                    else
+                    {
+                        _selectedMultiplyElements.Add(ElementTypesArray[i]);
+                        _hasSelectedMultiplyElement = true;
+                    }
+                }
+
+                currentColumn++;
+
+                if (i < ElementTypesArray.Length - 1 && currentColumn < _columnsInRow)
+                {
+                    GUILayout.Space(5);
+                }
+            }
+        }
+        EditorGUILayout.EndHorizontal();
+
+        if (_selectedMultiplyElements.Count > 0)
+        {
+            EditorGUILayout.LabelField($"Selected: {string.Join(", ", _selectedMultiplyElements)}", EditorStyles.helpBox);
+        }
+        else
+        {
+            EditorGUILayout.HelpBox("No elements selected", MessageType.Warning);
+        }
+    }
+
+    private void GUISingleElementButtons()
     {
         EditorGUILayout.Space(20);
         EditorGUILayout.LabelField($"Select the ElementType", EditorStyles.boldLabel);
@@ -170,7 +290,7 @@ public class TypeSelectWindow : EditorWindow
 
         EditorGUILayout.BeginHorizontal();
         {
-            for (int i = 0; i < ElementTypesLength; i++)
+            for (int i = 0; i < ElementTypesArray.Length; i++)
             {
                 if (currentColumn >= _columnsInRow)
                 {
@@ -179,18 +299,18 @@ public class TypeSelectWindow : EditorWindow
                     currentColumn = 0;
                 }
 
-                bool isSelected = _hasSelectedElement && _selectedElement == ElementTypesArray[i];
+                bool isSelected = _hasSelectedSingleElement && _selectedElement == ElementTypesArray[i];
                 GUIStyle buttonStyle = isSelected ? GUIColorizer.GetSelectedButtonStyle(GUIColorizer.GetTileColor(ElementTypesArray[i])) : GetButtonStyle(ElementTypesArray[i]);
 
                 if (GUILayout.Button(ElementTypesArray[i].ToString(), buttonStyle, GUILayout.Width(80), GUILayout.Height(40)))
                 {
                     _selectedElement = ElementTypesArray[i];
-                    _hasSelectedElement = true;
+                    _hasSelectedSingleElement = true;
                 }
 
                 currentColumn++;
 
-                if (i < ElementTypesLength - 1 && currentColumn < _columnsInRow)
+                if (i < ElementTypesArray.Length - 1 && currentColumn < _columnsInRow)
                 {
                     GUILayout.Space(5);
                 }
@@ -198,10 +318,21 @@ public class TypeSelectWindow : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
 
-        if (_hasSelectedElement)
+        if (_hasSelectedSingleElement)
         {
             EditorGUILayout.LabelField($"Selected: {_selectedElement}", EditorStyles.helpBox);
         }
+    }
+
+    private static Rect CalculateWindowPosition(Vector2 screenPosition)
+    {
+        float width = 1000;
+        float height = 800;
+
+        float x = Mathf.Min(screenPosition.x, Screen.currentResolution.width - width - 20);
+        float y = Mathf.Min(screenPosition.y + 20, Screen.currentResolution.height - height - 20);
+
+        return new Rect(x, y, width, height);
     }
 
     private GUIStyle GetButtonStyle(ElementTypes type)

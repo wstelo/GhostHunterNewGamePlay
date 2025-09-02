@@ -28,7 +28,6 @@ public class DefenderBuilder
 
             if(currentPlatform.IsEmpty)
             {
-                currentPlatform.Occupy();
                 BuildInstalled?.Invoke(currentPlatform);
             }
         }

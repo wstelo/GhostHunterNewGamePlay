@@ -20,7 +20,7 @@ public class LevelEntryPoint : MonoBehaviour
     private List<ProjectileData> _projectilesData = new List<ProjectileData>();
 
 
-    private SpawnerHandler _unitSpawnerHandler;
+    private SpawnersHandler _unitSpawnerHandler;
     private DefenderSpawnHandler _defenderSpawnHandler;
     private EnemySpawnHandler _enemySpawnHandler;
     private DefenderBuilder _buildConstructor;
@@ -48,8 +48,8 @@ public class LevelEntryPoint : MonoBehaviour
         _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler);
         _buildConstructor = new DefenderBuilder(_inputHandler, _buildPreviewer);
 
-        _unitSpawnerHandler = new SpawnerHandler(_enemiesData, GetCurrentLevelDefenderData(_defenderConfig), _projectilesData, _configRepository.ConfigList);
-        _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _spline, _enemiesData, _spawnDetector);
+        _unitSpawnerHandler = new SpawnersHandler(_enemiesData, GetCurrentLevelDefenderData(_defenderConfig), _projectilesData, _configRepository.ConfigList);
+        _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _spline, _spawnDetector);
 
         _defenderSpawnHandler = new DefenderSpawnHandler(_unitViewHandler, _buildConstructor, _unitSpawnerHandler, _defendersData.First());
     }

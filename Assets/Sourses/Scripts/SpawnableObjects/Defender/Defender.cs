@@ -11,47 +11,53 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
 {
     [SerializeField] private DefenderAnimatorController _defenderAnimatorController;
     [SerializeField] private SkinnedMeshRenderer _renderer;
-    [SerializeField] private ParticleSystem _particleSystem;
+    [SerializeField] private ParticleSystem _particleAttackArea;
     [SerializeField] private Transform _projectileSpawnPoint;
     [SerializeField] private DefenderAreaDetector _defenceAreaDetector;
 
-    private Enemy _currentTarget;
-    private DefenderAttacker _attackManager;
-    private SpawnerHandler _spawnerHandler;
-    private float _attackDelay = 1;
+    private StateMachine _stateMachine;
+
+    private SpawnersHandler _spawnerHandler;
+    private float _attackDelay = 0.5f;
 
     public event Action<Defender> Disabled;
-    public event Action<Enemy> Attacked;
 
-    public abstract DefenderAttackTypes AttackType { get; }
-    public abstract List<ProjectileTypes> ProjectilesTypes { get; }
-    public abstract DefenderTypes DefenderType { get; }
-    public int ProjectileCount { get; private set; }
+    public DefenderProjectileContainer ProjectileContainer;                                  ///////////////////////////// ???????????????? ןמה טםעונפויסמל לויבט?
+    public  DefenderAttackTypes AttackType { get; private set; }
+    public ProjectileTypes ProjectileType { get; private set; }
+    public  DefenderTypes DefenderType { get; private set; }
     public ElementTypes ElementType { get; protected set; }
     public Color Color { get; protected set; } = Color.white;
 
-    private void FixedUpdate()
+    private void Awake()
     {
-        _currentTarget = _defenceAreaDetector.GetEnemies();       
-
-        if (_attackManager != null && _currentTarget != null && _currentTarget.ElementType == ElementType)
-        {
-            transform.LookAt(_currentTarget.transform);
-            _attackManager.UpdateAttack(this, _currentTarget);
-        }      
+        ProjectileContainer = new DefenderProjectileContainer();
+        ProjectileContainer.ProjectileEnded += Disable;
     }
 
-    public void Init(ElementTypes type, Color color, SpawnerHandler spawnerHandler, int projectileCount)
+    private void FixedUpdate()
     {
-        ProjectileCount = projectileCount;
+        _stateMachine.FixedUpdate();
+    }
+
+    public void Init(ElementTypes type, Color color, SpawnersHandler spawnerHandler, int projectileCount, DefenderData config)
+    {
+        AttackType = config.AttackTypes;
+        ProjectileType = config.ProjectileType;
+        DefenderType = config.DefenderType;
+        ProjectileContainer.SetCount(projectileCount);
         _spawnerHandler = spawnerHandler;
         ElementType = type;
         Color = color;
-        var main = _particleSystem.main;
+        var main = _particleAttackArea.main;
         main.startColor = Color;
         _renderer.material.color = color;
+        
+        _stateMachine = new StateMachine();
+        _stateMachine.AddState(new DefenderAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler,_attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementType, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
+        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementType));
 
-        _attackManager = new DefenderAttacker(_defenceAreaDetector, _spawnerHandler, AttackType, _attackDelay, ProjectilesTypes.First(), ElementType, _projectileSpawnPoint.position, _defenderAnimatorController);
+        _stateMachine.SetState<DefenderAttackState>();
     }
 
     public void Disable()

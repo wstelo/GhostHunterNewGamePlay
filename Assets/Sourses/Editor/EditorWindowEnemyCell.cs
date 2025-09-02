@@ -4,25 +4,28 @@ using UnityEngine;
 
 public class EditorWindowEnemyCell 
 {
-    public ElementTypes ElementType { get; private set; }
     public EnemyTypes EnemyType { get; private set; }
     public int Count { get; private set; }
+    public bool IsMultipleElements;
+    public List<ElementTypes> ElementTypes;
+    public int MultipleTypeHealth = 1;
 
-    public EditorWindowEnemyCell(ElementTypes elementType, EnemyTypes enemyType, int count)
+    public EditorWindowEnemyCell(List<ElementTypes> elementType, EnemyTypes enemyType, int count)
     {
-        ElementType = elementType;
         EnemyType = enemyType;
         Count = count;
+        ElementTypes = elementType;
+        IsMultipleElements = false;
     }
 
-    public void SetElement(ElementTypes type)
+    public void SetElements(List<ElementTypes> type)
     {
-        ElementType = type;
+        ElementTypes = type;
     }
 
-    public void SetParameters(ElementTypes elementType, EnemyTypes enemyType, int count)
+    public void SetParameters(List<ElementTypes> elementType, EnemyTypes enemyType, int count)
     {
-        ElementType = elementType;
+        ElementTypes = elementType;
         EnemyType = enemyType;
         Count = count;
     }

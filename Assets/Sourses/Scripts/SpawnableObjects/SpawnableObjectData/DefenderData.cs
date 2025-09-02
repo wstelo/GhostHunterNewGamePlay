@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class DefenderData : SpawnableObjectData<Defender>
 {
+    public ProjectileTypes ProjectileType {  get; private set; }
+    public DefenderAttackTypes AttackTypes { get; private set; }
     public DefenderTypes DefenderType { get; private set; }
     public BuildPreview BuildPreview { get; private set; }
     public GameObject HitEffect { get; private set; }
