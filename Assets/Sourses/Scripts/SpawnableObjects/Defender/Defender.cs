@@ -10,7 +10,6 @@ using UnityEngine.UI.Extensions;
 public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
 {
     [SerializeField] private DefenderAnimatorController _defenderAnimatorController;
-    [SerializeField] private SkinnedMeshRenderer _renderer;
     [SerializeField] private ParticleSystem _particleAttackArea;
     [SerializeField] private Transform _projectileSpawnPoint;
     [SerializeField] private DefenderAreaDetector _defenceAreaDetector;
@@ -24,7 +23,7 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
 
     public DefenderProjectileContainer ProjectileContainer;                                  ///////////////////////////// ???????????????? ןמה טםעונפויסמל לויבט?
     public  DefenderAttackTypes AttackType { get; private set; }
-    public ProjectileTypes ProjectileType { get; private set; }
+    public ProjectileTypes ProjectileType { get; private set; }                           ///////////////////////////////////////     DATA HOLDER REQUIRED
     public  DefenderTypes DefenderType { get; private set; }
     public ElementTypes ElementType { get; protected set; }
     public Color Color { get; protected set; } = Color.white;
@@ -51,7 +50,6 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         Color = color;
         var main = _particleAttackArea.main;
         main.startColor = Color;
-        _renderer.material.color = color;
         
         _stateMachine = new StateMachine();
         _stateMachine.AddState(new DefenderAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler,_attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementType, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));

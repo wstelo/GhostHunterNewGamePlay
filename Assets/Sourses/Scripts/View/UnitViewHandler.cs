@@ -12,6 +12,7 @@ public class UnitViewHandler
     private int _repeatableUnitCount = 0;
 
     public event Action<ProjectileButton> ButtonClicked;
+    public event Action<UnitPlatform, ProjectileButton> PlatformDetected;
 
     public UnitViewHandler(CellHandler projectileCellHandler, ProjectileButtonHandler buttonHandler)
     {
@@ -64,15 +65,20 @@ public class UnitViewHandler
     {
         foreach (var button in buttons)
         {
-            button.ButtonClicked += ClickButton;
+            button.PlatformDetected += DetectPlatform;
             button.ButtonDestroyed += Unsubscribe;
         }
     }
 
     private void Unsubscribe(ProjectileButton button)
     {
-        button.ButtonClicked -= ClickButton;
+        button.PlatformDetected += DetectPlatform;
         button.ButtonDestroyed -= Unsubscribe;
+    }
+
+    private void DetectPlatform(UnitPlatform platform, ProjectileButton button)
+    {
+        PlatformDetected?.Invoke(platform, button);
     }
 
     private void ClickButton(ProjectileButton button)

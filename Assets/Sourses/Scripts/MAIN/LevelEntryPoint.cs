@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Reflex.Attributes;
 using UnityEngine;
 using UnityEngine.Splines;
+using static UnityEditor.Progress;
 
 public class LevelEntryPoint : MonoBehaviour
 {
@@ -19,7 +20,6 @@ public class LevelEntryPoint : MonoBehaviour
     private List<EnemyData> _enemiesData = new List<EnemyData>();
     private List<ProjectileData> _projectilesData = new List<ProjectileData>();
 
-
     private SpawnersHandler _unitSpawnerHandler;
     private DefenderSpawnHandler _defenderSpawnHandler;
     private EnemySpawnHandler _enemySpawnHandler;
@@ -32,7 +32,6 @@ public class LevelEntryPoint : MonoBehaviour
     private LevelConfig _levelConfig;
 
     [Inject] private ConfigsRepository _configRepository;
-
     [Inject] private DefenderConfig _defenderConfig;
 
     private void Awake()
@@ -54,7 +53,7 @@ public class LevelEntryPoint : MonoBehaviour
         _defenderSpawnHandler = new DefenderSpawnHandler(_unitViewHandler, _buildConstructor, _unitSpawnerHandler, _defendersData.First());
     }
 
-    private DefenderData GetCurrentLevelDefenderData(DefenderConfig defenderConfig)
+    private DefenderData GetCurrentLevelDefenderData(DefenderConfig defenderConfig)                                                                                          /////////////////////////////////////////////////
     {
         return new DefenderData(defenderConfig.DefenderType, defenderConfig.Prefab, defenderConfig.UnitPreviewPrefab, defenderConfig.HitEffect);
     }
@@ -63,11 +62,14 @@ public class LevelEntryPoint : MonoBehaviour
     {
         List<ElementTypes> elements = new List<ElementTypes>();
 
-        foreach (var item in levelConfig.EnemiesLevelConfigs)
+        foreach (var enemyConfig in levelConfig.EnemiesLevelConfigs)
         {
-            if (elements.Contains(item.ElementType) == false)
+            foreach (var element in enemyConfig.ElementTypes)
             {
-                elements.Add(item.ElementType);
+                if (elements.Contains(element) == false)
+                {
+                    elements.Add(element);
+                }
             }
         }
 

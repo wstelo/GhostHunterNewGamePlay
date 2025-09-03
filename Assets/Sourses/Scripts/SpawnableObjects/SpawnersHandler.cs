@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SpawnersHandler
@@ -56,13 +57,13 @@ public class SpawnersHandler
             defender => defender.Init(requiredElement, GetColorByElementType(requiredElement), this, projectileCount, data));
     }
 
-    public Enemy SpawnEnemy(EnemyTypes requiredType, ElementTypes reqiredElement, Vector3 position)
+    public Enemy SpawnEnemy(EnemyTypes requiredType, List<ElementTypes> reqiredElements, Vector3 position)
     {
         return Spawn(
             _enemySpawners,
             requiredType,
             position,
-            enemy => enemy.Init(reqiredElement, requiredType, GetColorByElementType(reqiredElement)));
+            enemy => enemy.Init(reqiredElements, requiredType, GetMultipleElementColor(reqiredElements)));
     }
 
     public Projectile SpawnProjectile(ProjectileTypes requiredType, ElementTypes requiredElements, Vector3 position)
@@ -95,7 +96,40 @@ public class SpawnersHandler
         }
     }
 
-    private Color GetColorByElementType(ElementTypes elementType)
+    private List<Color> GetMultipleElementColor (List<ElementTypes> elementTypes)          //////////////////////////////////
+    {
+        List<Color> color = new List<Color>();
+
+        if(elementTypes.Count > 1)
+        {
+            foreach (var item in _elementConfigs)
+            {
+                foreach(var type in elementTypes)
+                {
+                    if (item.Type == type)
+                    {
+                        color.Add(item.Color);
+                    }
+                }
+            }
+        }
+        else
+        {
+            foreach (var item in _elementConfigs)
+            {
+                if (item.Type == elementTypes.First())
+                {
+                    color.Add(item.Color);
+
+                    break;
+                }
+            }
+        }
+
+        return color;
+    }
+
+    private Color GetColorByElementType(ElementTypes elementType)                          /////////////////////////////////////
     {
         Color color = Color.white;
 

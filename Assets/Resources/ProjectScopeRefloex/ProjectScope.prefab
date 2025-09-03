@@ -85,5 +85,6 @@ MonoBehaviour:
   _enemyConfigs:
   - {fileID: 11400000, guid: 71f98c3f06862274f91f4136e8022a1b, type: 2}
   - {fileID: 11400000, guid: d18acc9aa4de0b246aad393d0a2adb0b, type: 2}
+  - {fileID: 11400000, guid: 6bbdd88c946efd149830ff8ca2892726, type: 2}
   _projectileConfigs:
   - {fileID: 11400000, guid: a5a2f904522ecff419bc7ff350a5c81c, type: 2}

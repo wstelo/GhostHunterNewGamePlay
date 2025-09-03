@@ -16,7 +16,6 @@ public class MainWindow : EditorWindow
     private Vector2 _scrollPosition;
     private int _levelNumber = 0;
 
-    //private readonly static EnemyTypes[] EnemyTypesArray = (EnemyTypes[])Enum.GetValues(typeof(EnemyTypes));
     private readonly static EnemyTypes[] NormalEnemyTypesArray = EnemyTypesFilter.GetEnemyCategories().normal;
     private EnemyTypes _defaultEnemyType = EnemyTypes.Ghost;
 
@@ -35,14 +34,12 @@ public class MainWindow : EditorWindow
         InitializeButtonValues();
     }
 
-
-
     private void OnGUI()
     {
         GUILevelInfo();
         EditorGUILayout.Space(30);
 
-        EditorGUILayout.LabelField($"Выберите дефолтный тип монстров на уровне.", GUILayout.Width(800));         ////////////////////////////////
+        EditorGUILayout.LabelField($"Выберите дефолтный тип монстров на уровне.", GUILayout.Width(800));         
         EditorGUILayout.Space(5);
 
         EditorGUILayout.BeginHorizontal();
@@ -82,9 +79,11 @@ public class MainWindow : EditorWindow
                 if (_buttonValues[i, j] != null)
                 {
                     _buttonValues[i, j].SetParameters(
-                        _buttonValues[i, j].ElementType,
+                        _buttonValues[i, j].ElementTypes,
                         _defaultEnemyType,
-                        _buttonValues[i, j].Count
+                        _buttonValues[i, j].Count,
+                        _buttonValues[i, j].Health,
+                        _buttonValues[i, j].IsMultipleElements
                     );
                 }
             }
@@ -123,7 +122,15 @@ public class MainWindow : EditorWindow
                     {
                         EditorWindowEnemyCell currentCell = _buttonValues[row, col];
 
-                        if (GUILayout.Button($"{currentCell.ElementType} \n {currentCell.EnemyType} \n {currentCell.Count}", GUIColorizer.GetTileStyle(_buttonValues[row, col].ElementType), GUILayout.Width(100), GUILayout.Height(70)))
+                        string elementText = currentCell.IsMultipleElements ?
+                            string.Join(",", currentCell.ElementTypes) :
+                            currentCell.ElementTypes.First().ToString();
+
+                        string buttonText = $"{elementText} \n {currentCell.EnemyType} \n Count - {currentCell.Count} \n Health - {currentCell.Health}";
+
+                        GUIStyle buttonStyle = currentCell.IsMultipleElements ? GUI.skin.button : GUIColorizer.GetTileStyle(currentCell.ElementTypes.First());
+
+                        if(GUILayout.Button(buttonText, buttonStyle, GUILayout.Width(100), GUILayout.Height(70)))
                         {
                             ShowTypeSelectWindow(row, col);
                         }
@@ -204,7 +211,7 @@ public class MainWindow : EditorWindow
             {
                 if (_buttonValues[i, j] != null)
                 {
-                    _buttonValues[i, j].SetElement(ElementTypes.Red);
+                    _buttonValues[i, j].SetElements(new List<ElementTypes> { ElementTypes.Red});
                 }
             }
         }
@@ -236,7 +243,7 @@ public class MainWindow : EditorWindow
                     }
                     else
                     {
-                        newArray[i, j] = new EditorWindowEnemyCell(ElementTypes.Red, _defaultEnemyType, 1);
+                        newArray[i, j] = new EditorWindowEnemyCell(new List<ElementTypes> { ElementTypes.Red }, _defaultEnemyType, 1);
                     }
                 }
             }
@@ -247,7 +254,7 @@ public class MainWindow : EditorWindow
                 {
                     if (newArray[i, j] == null)
                     {
-                        newArray[i, j] = new EditorWindowEnemyCell(ElementTypes.Red, _defaultEnemyType, 1);
+                        newArray[i, j] = new EditorWindowEnemyCell(new List<ElementTypes> { ElementTypes.Red }, _defaultEnemyType, 1);
                     }
                 }
             }
@@ -262,17 +269,37 @@ public class MainWindow : EditorWindow
         Vector2 screenPosition = GUIUtility.GUIToScreenPoint(mousePosition);
 
         EditorWindowEnemyCell currentCell = _buttonValues[row, column];
-        ElementTypes currentElement = currentCell.ElementType;
+
+        ElementTypes currentElement = currentCell.ElementTypes.FirstOrDefault();
         EnemyTypes currentEnemy = currentCell.EnemyType;
         int currentCount = currentCell.Count;
+        bool isMultiple = currentCell.IsMultipleElements;
+        List<ElementTypes> currentElements = currentCell.ElementTypes;
+        int currentHealth = currentCell.Health;
 
-        TypeSelectWindow.ShowWindow(this, row, column, screenPosition, currentElement, currentEnemy, currentCount);
+        TypeSelectWindow.ShowWindow(
+            this,
+            row,
+            column,
+            screenPosition,
+            currentElement,
+            currentEnemy,
+            currentCount,
+            isMultiple,
+            currentElements,
+            currentHealth
+        );
+    }
+
+    public void SetTileType(int row, int column, List<ElementTypes> elementTypes, EnemyTypes enemyType, int count, bool isMultiple, int health = 1)
+    {
+        _buttonValues[row, column].SetParameters(elementTypes, enemyType, count, health, isMultiple);
+        Repaint();
     }
 
     public void SetTileType(int row, int column, ElementTypes elementType, EnemyTypes enemyType, int count)
     {
-        _buttonValues[row, column].SetParameters(elementType, enemyType, count);
-        Repaint();
+        SetTileType(row, column, new List<ElementTypes> { elementType }, enemyType, count, false, 1);
     }
 
     private void SaveToJsonFile()
@@ -322,12 +349,19 @@ public class MainWindow : EditorWindow
                 if (configIndex < _сellsCount)
                 {
                     var config = enemiesConfigs[configIndex];
-                    result[row, col] = new EditorWindowEnemyCell(config.ElementType, config.EnemyType, config.Count);
+                    result[row, col] = new EditorWindowEnemyCell(
+                        config.ElementTypes,
+                        config.EnemyType,
+                        config.Count,
+                        config.Health,
+                        config.IsMultiple
+                        );
+
                     configIndex++;
                 }
                 else
                 {
-                    result[row, col] = new EditorWindowEnemyCell(ElementTypes.Red, EnemyTypes.Ghost, 1);
+                    result[row, col] = new EditorWindowEnemyCell(new List<ElementTypes> { ElementTypes.Red }, EnemyTypes.Ghost, 1);
                 }
             }
         }
@@ -351,7 +385,7 @@ public class MainWindow : EditorWindow
                 }
 
                 EditorWindowEnemyCell currentCell = _buttonValues[i, j];
-                EnemiesLevelConfig newConfig = new EnemiesLevelConfig(currentCell.ElementType, currentCell.EnemyType, currentCell.Count);
+                EnemiesLevelConfig newConfig = new EnemiesLevelConfig(currentCell.ElementTypes, currentCell.EnemyType, currentCell.Count, currentCell.IsMultipleElements, currentCell.Health);
                 enemiesConfigs.Add(newConfig);
 
                 cellCounter++;

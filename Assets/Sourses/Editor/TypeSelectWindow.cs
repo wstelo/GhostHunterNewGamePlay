@@ -20,6 +20,7 @@ public class TypeSelectWindow : EditorWindow
     private int _minUnitCount = 1;
     private int _maxUnitCount = 20;
 
+    private EnemyTypes _lastNormalEnemyType = EnemyTypes.Ghost;
     private ElementTypes _selectedElement = ElementTypes.Red;
     private EnemyTypes _selectedType;
     private EnemyTypes _defaultTypeForSelectedCell;
@@ -30,8 +31,13 @@ public class TypeSelectWindow : EditorWindow
     private bool _isMultiple = false;
     private List<ElementTypes> _selectedMultiplyElements = new List<ElementTypes>();
     private bool _hasSelectedMultiplyElement = false;
+    private int _selectedHealth = 1;
+    private int _minHealth = 2;
+    private int _maxHealth = 8;
 
-    public static void ShowWindow(MainWindow mainWindow, int row, int column, Vector2 screenPosition, ElementTypes currentElement, EnemyTypes currentEnemy, int currentCount)
+    public static void ShowWindow(MainWindow mainWindow, int row, int column, Vector2 screenPosition,
+                                ElementTypes currentElement, EnemyTypes currentEnemy, int currentCount,
+                                bool isMultiple = false, List<ElementTypes> currentElements = null, int currentHealth = 1)
     {
         if (_selectWindow != null)
         {
@@ -40,7 +46,7 @@ public class TypeSelectWindow : EditorWindow
 
         _selectWindow = CreateInstance<TypeSelectWindow>();
         _selectWindow.titleContent = new GUIContent("Select Element Type");
-        _selectWindow.Initialize(mainWindow, row, column, currentElement, currentEnemy, currentCount);
+        _selectWindow.Initialize(mainWindow, row, column, currentElement, currentEnemy, currentCount, isMultiple, currentElements, currentHealth);
 
         _selectWindow.position = CalculateWindowPosition(screenPosition);
         _selectWindow.minSize = new Vector2(900, 800);
@@ -48,7 +54,10 @@ public class TypeSelectWindow : EditorWindow
 
         _selectWindow.Show();
     }
-    public void Initialize(MainWindow mainWindow, int row, int column, ElementTypes currentElement, EnemyTypes currentEnemy, int currentCount)
+
+    public void Initialize(MainWindow mainWindow, int row, int column, ElementTypes currentElement,
+                         EnemyTypes currentEnemy, int currentCount, bool isMultiple,
+                         List<ElementTypes> currentElements, int currentHealth)
     {
         _mainWindow = mainWindow;
         _currentRow = row;
@@ -58,10 +67,24 @@ public class TypeSelectWindow : EditorWindow
         _selectedType = currentEnemy;
         _defaultTypeForSelectedCell = currentEnemy;
         _unitCount = currentCount;
+        _isMultiple = isMultiple;
+        _selectedHealth = currentHealth;
+
+        if (!isMultiple && NormalEnemyTypesArray.Contains(currentEnemy))
+        {
+            _lastNormalEnemyType = currentEnemy;
+        }
+
+        if (currentElements != null)
+        {
+            _selectedMultiplyElements = new List<ElementTypes>(currentElements);
+        }
 
         _hasSelectedSingleElement = true;
         _hasSelectedType = true;
+        _hasSelectedMultiplyElement = _selectedMultiplyElements.Count > 0;
     }
+
 
     private void OnGUI()
     {
@@ -71,7 +94,13 @@ public class TypeSelectWindow : EditorWindow
         EditorGUILayout.BeginHorizontal();
         {
             EditorGUILayout.LabelField("Enemy Type Selection:", EditorStyles.boldLabel, GUILayout.Width(150));
+            bool oldIsMultiple = _isMultiple;
             _isMultiple = EditorGUILayout.Toggle("Multiple", _isMultiple, GUILayout.Width(150));
+
+            if (oldIsMultiple != _isMultiple)
+            {
+                OnModeChanged(oldIsMultiple, _isMultiple);
+            }
         }
         EditorGUILayout.EndHorizontal();
         EditorGUILayout.Space(30);
@@ -79,16 +108,41 @@ public class TypeSelectWindow : EditorWindow
         if (_isMultiple)
         {
             _unitCount = 1;
-            _selectedType = BossEnemyTypesArray.First();
             BossEnemySelector();
         }
         else
         {
-            _selectedType = _defaultTypeForSelectedCell;
             StandartEnemySelector();
         }
 
         GUISaveOrCancelButton();
+    }
+
+    private void OnModeChanged(bool oldMode, bool newMode)
+    {
+        if (newMode)
+        {
+            _selectedType = BossEnemyTypesArray.First();
+            _hasSelectedType = false;
+            _selectedMultiplyElements.Clear();
+            _hasSelectedMultiplyElement = false;
+            _selectedHealth = _minHealth;
+        }
+        else 
+        {
+            _selectedType = _lastNormalEnemyType;
+            _hasSelectedType = true;
+
+            if (_selectedMultiplyElements.Count > 0)
+            {
+                _selectedElement = _selectedMultiplyElements[0];
+            }
+            else
+            {
+                _selectedElement = ElementTypes.Red;
+            }
+            _hasSelectedSingleElement = true;
+        }
     }
 
     private void BossEnemySelector()
@@ -97,7 +151,6 @@ public class TypeSelectWindow : EditorWindow
         {
             EditorGUILayout.LabelField("Current:", GUILayout.Width(60));
 
-            // Показываем выбранные элементы для босса
             string elementsText = _selectedMultiplyElements.Count > 0
                 ? string.Join(", ", _selectedMultiplyElements)
                 : "None";
@@ -109,6 +162,9 @@ public class TypeSelectWindow : EditorWindow
         {
             EditorGUILayout.LabelField($"Enemy: {_selectedType}", GUILayout.Width(150));
             EditorGUILayout.LabelField($"Count: {_unitCount}", GUILayout.Width(80));
+
+            EditorGUILayout.LabelField("Health:", GUILayout.Width(50));
+            _selectedHealth = EditorGUILayout.IntSlider(_selectedHealth, _minHealth, _maxHealth, GUILayout.Width(150));
         }
         EditorGUILayout.EndHorizontal();
 
@@ -140,7 +196,32 @@ public class TypeSelectWindow : EditorWindow
 
     private void ApplySelectionParameters()
     {
-        _mainWindow.SetTileType(_currentRow, _currentColumn, _selectedElement, _selectedType, _unitCount);
+        if (_isMultiple)
+        {
+            _mainWindow.SetTileType(
+                _currentRow,
+                _currentColumn,
+                _selectedMultiplyElements,
+                _selectedType,
+                _unitCount,
+                true,
+                _selectedHealth
+            );
+        }
+        else
+        {
+            _lastNormalEnemyType = _selectedType;
+
+            _mainWindow.SetTileType(
+                _currentRow,
+                _currentColumn,
+                new List<ElementTypes> { _selectedElement },
+                _selectedType,
+                _unitCount,
+                false
+            );
+        }
+        Close();
     }
 
     private void GUISaveOrCancelButton()
@@ -148,9 +229,25 @@ public class TypeSelectWindow : EditorWindow
         EditorGUILayout.LabelField($"Select type for cell at row {_currentRow + 1}, column {_currentColumn + 1}", EditorStyles.boldLabel);
         EditorGUILayout.Space(10);
 
+        bool canApply;
+        string message;
+
+        if (_isMultiple)
+        {
+            canApply = (_selectedMultiplyElements.Count >= 2 && _hasSelectedType);
+            message = _selectedMultiplyElements.Count < 2 ?
+                "Please select at least 2 Element Types for Boss" :
+                "Please select Enemy Type";
+        }
+        else
+        {
+            canApply = (_hasSelectedSingleElement && _hasSelectedType);
+            message = "Please select both Element Type and Enemy Type";
+        }
+
         EditorGUILayout.BeginHorizontal();
         {
-            GUI.enabled = _hasSelectedSingleElement && _hasSelectedType ;
+            GUI.enabled = canApply;
 
             if (GUILayout.Button("Apply", GUILayout.Height(30)))
             {
@@ -167,9 +264,12 @@ public class TypeSelectWindow : EditorWindow
         }
         EditorGUILayout.EndHorizontal();
 
-        if (!_hasSelectedSingleElement || !_hasSelectedType)
+        if (!canApply)
         {
-            EditorGUILayout.HelpBox("Please select both Element Type and Enemy Type", MessageType.Info);
+            string messages = _isMultiple ?
+                "Please select at least one Element Type and Enemy Type" :
+                "Please select both Element Type and Enemy Type";
+            EditorGUILayout.HelpBox(message, MessageType.Info);
         }
     }
 
@@ -255,9 +355,10 @@ public class TypeSelectWindow : EditorWindow
                     }
                     else
                     {
-                        _selectedMultiplyElements.Add(ElementTypesArray[i]);
-                        _hasSelectedMultiplyElement = true;
+                        _selectedMultiplyElements.Add(ElementTypesArray[i]);                        
                     }
+
+                    _hasSelectedMultiplyElement = _selectedMultiplyElements.Count > 0;
                 }
 
                 currentColumn++;

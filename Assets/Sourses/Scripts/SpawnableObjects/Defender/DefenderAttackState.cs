@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -39,7 +40,7 @@ public class DefenderAttackState : State
         _projectileContainer = projectileContainer;
     }
 
-    public override void Enter()
+    public override void Enter()                                           /////////////////////////////////////////////////////
     {
         
     }
@@ -53,13 +54,13 @@ public class DefenderAttackState : State
             StateMachine.SetState<DefenderIdleState>();
         }
 
-        if (_currentTarget != null && _currentTarget.ElementType == _currentElement && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.ProjectileCount > 0)
+        if (_currentTarget != null && _currentTarget.ElementTypes.First() == _currentElement && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.ProjectileCount > 0)            //////////////////////////////
         {
             _currentTask = Attack();
         }
     }
 
-    public override void Exit()
+    public override void Exit()                                              ///////////////////////////////////////////////////
     {
         
     }

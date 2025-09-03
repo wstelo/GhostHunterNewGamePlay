@@ -6,15 +6,18 @@ public class DefenderAreaDetector : MonoBehaviour
 {
     private List<Enemy> _currentEnemies = new List<Enemy>();
 
-    public Enemy GetNearbyEnemyByType(ElementTypes type)
+    public Enemy GetNearbyEnemyByType(ElementTypes type)            /////////////////////////////////////////////////
     {
         List<Enemy> currentEnemies = new List<Enemy>();
 
         foreach (var item in _currentEnemies)
         {
-            if (item.ElementType == type)
+            if (item.IsMultiType == false)
             {
-                currentEnemies.Add(item);
+                if(item.ElementTypes.First() == type)
+                {
+                    currentEnemies.Add(item);
+                }               
             }
         }
 

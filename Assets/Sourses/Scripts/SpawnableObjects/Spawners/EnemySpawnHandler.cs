@@ -32,14 +32,14 @@ public class EnemySpawnHandler
         if (_currentEnemiesConfigIndex < _levelConfig.EnemiesLevelConfigs.Count)
         {
             EnemiesLevelConfig currentEnemy = _levelConfig.EnemiesLevelConfigs[_currentEnemiesConfigIndex];
-            
-            Enemy enemy = _spawnerHandler.SpawnEnemy(currentEnemy.EnemyType, currentEnemy.ElementType, _spawnPosition);
 
-            if(enemy != null)
+            Enemy enemy = _spawnerHandler.SpawnEnemy(currentEnemy.EnemyType, currentEnemy.ElementTypes, _spawnPosition);
+
+            if (enemy != null)
             {
                 enemy.SetMover(_splineContainer, _levelConfig.LevelSpeed);
             }
-                       
+
             _spawnedEnemyCount++;
 
             if (_spawnedEnemyCount >= currentEnemy.Count)
