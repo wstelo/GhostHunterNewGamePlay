@@ -5,10 +5,9 @@ public class UnitPlatform : MonoBehaviour
 {
     [SerializeField] private TMP_Text _countText;
 
-    private Defender _currentDefender;
     private int _defaultValue = 0;
 
-
+    public Defender CurrentDefender {  get; private set; }
     public bool IsEmpty { get; private set; } = true;
 
     private void Awake()
@@ -19,19 +18,19 @@ public class UnitPlatform : MonoBehaviour
     public void Occupy(Defender currentDefender)
     {
         IsEmpty = false;
-        _currentDefender = currentDefender;
-        _currentDefender.Disabled += Clear;
-        RefreshCountPanel(_currentDefender.ProjectileContainer.ProjectileCount);
-        _currentDefender.ProjectileContainer.CountChanged += RefreshCountPanel;
+        CurrentDefender = currentDefender;
+        CurrentDefender.Disabled += Clear;
+        RefreshCountPanel(CurrentDefender.ProjectileContainer.Count);
+        CurrentDefender.ProjectileContainer.CountChanged += RefreshCountPanel;
     }
 
     public void Clear(Defender currentDefender)
     {
         IsEmpty = true;
         RefreshCountPanel(_defaultValue);
-        _currentDefender.ProjectileContainer.CountChanged -= RefreshCountPanel;
-        _currentDefender.Disabled -= Clear;
-        _currentDefender = null;
+        CurrentDefender.ProjectileContainer.CountChanged -= RefreshCountPanel;
+        CurrentDefender.Disabled -= Clear;
+        CurrentDefender = null;
     }
 
     private void RefreshCountPanel(int count)

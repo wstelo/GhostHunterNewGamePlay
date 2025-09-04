@@ -35,7 +35,7 @@ public class SpawnableObjectDataFactory
 
         foreach (var defender in _defenderConfigs)
         {
-            var unitData = new DefenderData(defender.DefenderType, defender.Prefab, defender.UnitPreviewPrefab, defender.HitEffect);
+            var unitData = new DefenderData(defender.DefenderType, defender.Prefab, defender.HitEffect);
             unitsData.Add(unitData);
         }
 

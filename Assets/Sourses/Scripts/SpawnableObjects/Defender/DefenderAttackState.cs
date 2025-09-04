@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class DefenderAttackState : State
 {
-    private DefenderProjectileContainer _projectileContainer;
+    private IRechargable _projectileContainer;
     private DefenderAnimatorController _animatorController;
     private DefenderAreaDetector _detector;
     private SpawnersHandler _spawnerHandler;
@@ -28,7 +28,7 @@ public class DefenderAttackState : State
         ElementTypes elementType,
         Vector3 spawnPosition,
         DefenderAnimatorController animatorController,
-        DefenderProjectileContainer projectileContainer) : base(stateMachine)
+        IRechargable projectileContainer) : base(stateMachine)
     {
         _detector = detector;
         _spawnerHandler = spawnerHandler;
@@ -40,11 +40,6 @@ public class DefenderAttackState : State
         _projectileContainer = projectileContainer;
     }
 
-    public override void Enter()                                           /////////////////////////////////////////////////////
-    {
-        
-    }
-
     public override void FixedUpdate()
     {
         _currentTarget = _detector.GetNearbyEnemyByType(_currentElement);
@@ -54,15 +49,10 @@ public class DefenderAttackState : State
             StateMachine.SetState<DefenderIdleState>();
         }
 
-        if (_currentTarget != null && _currentTarget.ElementTypes.First() == _currentElement && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.ProjectileCount > 0)            //////////////////////////////
+        if (_currentTarget != null && _currentTarget.ElementTypes.First() == _currentElement && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.Count > 0)            //////////////////////////////
         {
             _currentTask = Attack();
         }
-    }
-
-    public override void Exit()                                              ///////////////////////////////////////////////////
-    {
-        
     }
 
     private async UniTask Attack()

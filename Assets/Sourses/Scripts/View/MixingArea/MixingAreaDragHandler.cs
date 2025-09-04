@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DefenderMixingArea : MonoBehaviour
+public class MixingAreaDragHandler : MonoBehaviour
 {
-   
+    
 }

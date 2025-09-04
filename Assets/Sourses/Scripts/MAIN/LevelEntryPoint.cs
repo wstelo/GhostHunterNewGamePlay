@@ -9,7 +9,6 @@ using static UnityEditor.Progress;
 public class LevelEntryPoint : MonoBehaviour
 {
     [SerializeField] private InputHandler _inputHandler;
-    [SerializeField] private BuildPreviewer _buildPreviewer;
     [SerializeField] private EnemySpawnPointDetector _spawnDetector;
     [SerializeField] private ProjectileButtonHandler _projectileButtonHandler;
     [SerializeField] private SplineContainer _spline;
@@ -23,7 +22,6 @@ public class LevelEntryPoint : MonoBehaviour
     private SpawnersHandler _unitSpawnerHandler;
     private DefenderSpawnHandler _defenderSpawnHandler;
     private EnemySpawnHandler _enemySpawnHandler;
-    private DefenderBuilder _buildConstructor;
 
     private CellHandler _cellHandler;
     private UnitViewHandler _unitViewHandler;
@@ -45,17 +43,16 @@ public class LevelEntryPoint : MonoBehaviour
 
         _cellHandler = new CellHandler(_enemySpawnHandler, _elementTypesOnLevel, _configRepository.ConfigList);
         _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler);
-        _buildConstructor = new DefenderBuilder(_inputHandler, _buildPreviewer);
 
         _unitSpawnerHandler = new SpawnersHandler(_enemiesData, GetCurrentLevelDefenderData(_defenderConfig), _projectilesData, _configRepository.ConfigList);
         _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _spline, _spawnDetector);
 
-        _defenderSpawnHandler = new DefenderSpawnHandler(_unitViewHandler, _buildConstructor, _unitSpawnerHandler, _defendersData.First());
+        _defenderSpawnHandler = new DefenderSpawnHandler(_unitViewHandler, _unitSpawnerHandler, _defendersData.First());
     }
 
     private DefenderData GetCurrentLevelDefenderData(DefenderConfig defenderConfig)                                                                                          /////////////////////////////////////////////////
     {
-        return new DefenderData(defenderConfig.DefenderType, defenderConfig.Prefab, defenderConfig.UnitPreviewPrefab, defenderConfig.HitEffect);
+        return new DefenderData(defenderConfig.DefenderType, defenderConfig.Prefab, defenderConfig.HitEffect);
     }
 
     private List<ElementTypes> GetCurrentElementTypes(LevelConfig levelConfig)

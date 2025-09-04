@@ -31,11 +31,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4377456615836958077}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3.9399948}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -29.5, y: -29.92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &735459338466374715
@@ -95,7 +94,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35.85
+  m_fontSize: 40
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -168,7 +167,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4377456615836958077}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -225,7 +223,10 @@ GameObject:
   - component: {fileID: 4958337795925780709}
   - component: {fileID: 8827663977766963228}
   - component: {fileID: 5062351211648548404}
-  - component: {fileID: 4128795443711879438}
+  - component: {fileID: 8422787931972207203}
+  - component: {fileID: 3267638606884438958}
+  - component: {fileID: 4464049797927999188}
+  - component: {fileID: 8397865969910761281}
   m_Layer: 5
   m_Name: ProjectileButton
   m_TagString: Untagged
@@ -240,7 +241,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4898979381262195927}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -248,7 +249,6 @@ RectTransform:
   - {fileID: 7239998144629467461}
   - {fileID: 6157311822647785042}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -337,7 +337,28 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &4128795443711879438
+--- !u!95 &8422787931972207203
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4898979381262195927}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fef0dff1167835d4bbdb5f06b0eb371b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3267638606884438958
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -346,9 +367,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 4898979381262195927}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d6b16147e2f6754a9ab215d9738ff80, type: 3}
+  m_Script: {fileID: 11500000, guid: 775122908e852434eb302275cffef38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 8422787931972207203}
+--- !u!114 &4464049797927999188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4898979381262195927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 175a7ae94a7f79542b98799d254f9130, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _platformLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  _mixingAreaLayer:
+    serializedVersion: 2
+    m_Bits: 512
+--- !u!114 &8397865969910761281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4898979381262195927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5359ae3c3b9565a49a2991e6ab8c8089, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dragHandler: {fileID: 4464049797927999188}
   _image: {fileID: 8827663977766963228}
   _text: {fileID: 7804079332113968522}
-  _button: {fileID: 5062351211648548404}

@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class UnitViewHandler
 {
@@ -11,8 +9,8 @@ public class UnitViewHandler
     private int _buttonCount;
     private int _repeatableUnitCount = 0;
 
-    public event Action<ProjectileButton> ButtonClicked;
-    public event Action<UnitPlatform, ProjectileButton> PlatformDetected;
+    public event Action<UnitPlatform, UnitButton> PlatformDetected;
+    public event Action<MixingArea, UnitButton> MixingAreaDetected;
 
     public UnitViewHandler(CellHandler projectileCellHandler, ProjectileButtonHandler buttonHandler)
     {
@@ -61,28 +59,22 @@ public class UnitViewHandler
         return count;
     }
 
-    private void ButtonClickInitialize(List<ProjectileButton> buttons)
+    private void ButtonClickInitialize(List<UnitButton> buttons)
     {
         foreach (var button in buttons)
         {
             button.PlatformDetected += DetectPlatform;
-            button.ButtonDestroyed += Unsubscribe;
+            button.MixingAreaDetected += DetectMixingArea;
         }
     }
 
-    private void Unsubscribe(ProjectileButton button)
+    private void DetectMixingArea(MixingArea area, UnitButton button)
     {
-        button.PlatformDetected += DetectPlatform;
-        button.ButtonDestroyed -= Unsubscribe;
+        
     }
 
-    private void DetectPlatform(UnitPlatform platform, ProjectileButton button)
+    private void DetectPlatform(UnitPlatform platform, UnitButton button)
     {
-        PlatformDetected?.Invoke(platform, button);
-    }
-
-    private void ClickButton(ProjectileButton button)
-    {
-        ButtonClicked?.Invoke(button);
+        
     }
 }

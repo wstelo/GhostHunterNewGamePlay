@@ -29,11 +29,6 @@ public class DefenderAnimatorController : MonoBehaviour
         _animator.SetBool(DefenderAnimationData.IsAttack, true);
     }
 
-    public void StopAttackAnimation()
-    {
-        _animator.SetBool(DefenderAnimationData.IsAttack, false);
-    }
-
     public void CreateProjectile()
     {
         ProjectileSpawnPointEnded?.Invoke();
@@ -41,7 +36,7 @@ public class DefenderAnimatorController : MonoBehaviour
 
     public void EndAttackAnimation()
     {
-        StopAttackAnimation();
+        _animator.SetBool(DefenderAnimationData.IsAttack, false);
         _animator.speed = _defaultAnimatorSpeed;
         AttackAnimationEnded?.Invoke();
     }

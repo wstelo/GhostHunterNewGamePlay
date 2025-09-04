@@ -1,18 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.UI.Extensions;
 
 [RequireComponent(typeof(DefenderAreaDetector))]
 public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
 {
     [SerializeField] private DefenderAnimatorController _defenderAnimatorController;
-    [SerializeField] private ParticleSystem _particleAttackArea;
     [SerializeField] private Transform _projectileSpawnPoint;
     [SerializeField] private DefenderAreaDetector _defenceAreaDetector;
+    [SerializeField] private MultiColorAreaGenerator _colorGenerator;
 
     private StateMachine _stateMachine;
 
@@ -21,12 +17,12 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
 
     public event Action<Defender> Disabled;
 
-    public DefenderProjectileContainer ProjectileContainer;                                  ///////////////////////////// ???????????????? ןמה טםעונפויסמל לויבט?
-    public  DefenderAttackTypes AttackType { get; private set; }
+    public IRechargable ProjectileContainer;                                  ///////////////////////////// ???????????????? ןמה טםעונפויסמל לויבט?  ÇÀ×ÅÌ ??????????????????
+    public DefenderAttackTypes AttackType { get; private set; }
     public ProjectileTypes ProjectileType { get; private set; }                           ///////////////////////////////////////     DATA HOLDER REQUIRED
-    public  DefenderTypes DefenderType { get; private set; }
-    public ElementTypes ElementType { get; protected set; }
-    public Color Color { get; protected set; } = Color.white;
+    public DefenderTypes DefenderType { get; private set; }
+    public ElementTypes ElementType { get; private set; }
+    public Color Color { get; private set; } = Color.white;
 
     private void Awake()
     {
@@ -44,17 +40,16 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         AttackType = config.AttackTypes;
         ProjectileType = config.ProjectileType;
         DefenderType = config.DefenderType;
-        ProjectileContainer.SetCount(projectileCount);
+        ProjectileContainer.Recharge(projectileCount);
         _spawnerHandler = spawnerHandler;
         ElementType = type;
         Color = color;
-        var main = _particleAttackArea.main;
-        main.startColor = Color;
-        
-        _stateMachine = new StateMachine();
-        _stateMachine.AddState(new DefenderAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler,_attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementType, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
-        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementType));
 
+        _colorGenerator.Init(new List<Color> { color});
+
+        _stateMachine = new StateMachine();
+        _stateMachine.AddState(new DefenderAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementType, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
+        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementType));
         _stateMachine.SetState<DefenderAttackState>();
     }
 

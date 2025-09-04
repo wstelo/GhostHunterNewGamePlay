@@ -3,26 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DefenderProjectileContainer 
+public class DefenderProjectileContainer : IRechargable
 {
-    public int ProjectileCount { get; private set; } = 0;
+    public int Count { get; private set; } = 0;
 
     public event Action ProjectileEnded;
     public event Action<int> CountChanged;
 
     public void DecreaseCount()
     {
-        ProjectileCount--;
-        CountChanged?.Invoke(ProjectileCount);
+        Count--;
+        CountChanged?.Invoke(Count);
 
-        if (ProjectileCount == 0)
+        if (Count == 0)
         {
             ProjectileEnded?.Invoke();
         }
     }
 
-    public void SetCount(int count)
+    public void Recharge(int count)
     {
-        ProjectileCount = count;
+        if(Count >= 0)
+        {
+            Count += count;
+            CountChanged?.Invoke(Count);
+        }
     }
 }
