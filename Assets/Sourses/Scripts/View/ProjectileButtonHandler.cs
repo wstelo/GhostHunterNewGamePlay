@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ProjectileButtonHandler : MonoBehaviour
 {
-    [SerializeField] private List<UnitButton> _buttons;
+    [SerializeField] private List<ProjectileButton> _buttons;
 
     public int ButtonCount => _buttons.Count;
 
@@ -20,7 +20,7 @@ public class ProjectileButtonHandler : MonoBehaviour
         }
     }
 
-    public List<UnitButton> GetProjectileButtons()
+    public List<ProjectileButton> GetProjectileButtons()
     {
         return _buttons;
     }

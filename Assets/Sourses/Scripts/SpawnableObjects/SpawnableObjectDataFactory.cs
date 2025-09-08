@@ -25,7 +25,7 @@ public class SpawnableObjectDataFactory
             var unitData = new ProjectileData(item.Prefab, item.ProjectileType);
             projectilesData.Add(unitData);
         }
-
+        
         return projectilesData;
     }
 

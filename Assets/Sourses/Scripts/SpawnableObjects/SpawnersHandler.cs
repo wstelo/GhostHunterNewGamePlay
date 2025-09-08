@@ -24,6 +24,14 @@ public class SpawnersHandler
         SetParameters(enemiesData, defenderData, projectileData);
     }
 
+    public SpawnersHandler(ConfigsRepository repository)
+    {
+        _spawnableObjectFactory = new SpawnableObjectFactory();
+
+        _elementConfigs = repository.ConfigList;
+
+    }
+
     private TReturn Spawn<TKey, TReturn>(
     Dictionary<TKey, SpawnableObjectSpawner<TReturn>> spawners,
     TKey requiredTypes,
@@ -46,7 +54,7 @@ public class SpawnersHandler
         return null;
     }
 
-    public Defender SpawnDefender(DefenderTypes requiredType, ElementTypes requiredElement, Vector3 position, int projectileCount)
+    public Defender SpawnDefender(DefenderTypes requiredType, List<ElementTypes> requiredElement, Vector3 position, int projectileCount)
     {
         _defendersData.TryGetValue(requiredType, out DefenderData data);
 
@@ -54,7 +62,7 @@ public class SpawnersHandler
             _defenderSpawners,
             requiredType,
             position,
-            defender => defender.Init(requiredElement, GetColorByElementType(requiredElement), this, projectileCount, data));
+            defender => defender.Init(requiredElement, GetMultipleElementColor(requiredElement), this, projectileCount, data));
     }
 
     public Enemy SpawnEnemy(EnemyTypes requiredType, List<ElementTypes> reqiredElements, Vector3 position)

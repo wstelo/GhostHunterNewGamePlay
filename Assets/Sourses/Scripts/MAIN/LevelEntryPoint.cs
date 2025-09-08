@@ -8,6 +8,7 @@ using static UnityEditor.Progress;
 
 public class LevelEntryPoint : MonoBehaviour
 {
+    [SerializeField] private MixingArea _mixingArea;
     [SerializeField] private InputHandler _inputHandler;
     [SerializeField] private EnemySpawnPointDetector _spawnDetector;
     [SerializeField] private ProjectileButtonHandler _projectileButtonHandler;
@@ -47,7 +48,7 @@ public class LevelEntryPoint : MonoBehaviour
         _unitSpawnerHandler = new SpawnersHandler(_enemiesData, GetCurrentLevelDefenderData(_defenderConfig), _projectilesData, _configRepository.ConfigList);
         _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _spline, _spawnDetector);
 
-        _defenderSpawnHandler = new DefenderSpawnHandler(_unitViewHandler, _unitSpawnerHandler, _defendersData.First());
+        _defenderSpawnHandler = new DefenderSpawnHandler(_unitViewHandler, _unitSpawnerHandler, _defendersData.First(), _mixingArea);
     }
 
     private DefenderData GetCurrentLevelDefenderData(DefenderConfig defenderConfig)                                                                                          /////////////////////////////////////////////////

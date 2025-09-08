@@ -13,7 +13,7 @@ public class DefenderAttackState : State
     private SpawnersHandler _spawnerHandler;
     private float _attackTime;
     private ProjectileTypes _projectileType;
-    private ElementTypes _currentElement;
+    private List<ElementTypes> _currentElement;
     private Vector3 _spawnPosition;
 
     private UniTask _currentTask;
@@ -25,7 +25,7 @@ public class DefenderAttackState : State
         SpawnersHandler spawnerHandler,
         float attackDelay,
         ProjectileTypes projectileType,
-        ElementTypes elementType,
+        List<ElementTypes> elementType,
         Vector3 spawnPosition,
         DefenderAnimatorController animatorController,
         IRechargable projectileContainer) : base(stateMachine)
@@ -42,17 +42,17 @@ public class DefenderAttackState : State
 
     public override void FixedUpdate()
     {
-        _currentTarget = _detector.GetNearbyEnemyByType(_currentElement);
+        //_currentTarget = _detector.GetNearbyEnemyByType(_currentElement);
 
-        if( _currentTarget == null )
-        {
-            StateMachine.SetState<DefenderIdleState>();
-        }
+        //if( _currentTarget == null )
+        //{
+        //    StateMachine.SetState<DefenderIdleState>();
+        //}
 
-        if (_currentTarget != null && _currentTarget.ElementTypes.First() == _currentElement && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.Count > 0)            //////////////////////////////
-        {
-            _currentTask = Attack();
-        }
+        //if (_currentTarget != null && _currentTarget.ElementTypes.First() == _currentElement && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.Count > 0)            //////////////////////////////
+        //{
+        //    _currentTask = Attack();
+        //}
     }
 
     private async UniTask Attack()
@@ -70,7 +70,7 @@ public class DefenderAttackState : State
 
     private void SpawnProjectile()
     {
-        Projectile currentProjectile = _spawnerHandler.SpawnProjectile(_projectileType, _currentElement, _spawnPosition);
+        Projectile currentProjectile = _spawnerHandler.SpawnProjectile(_projectileType, _currentElement.First(), _spawnPosition);           //////////////////////////////////////// Add multi Projectile?
         currentProjectile.SetTarget(_currentTarget);
         _detector.Delete(_currentTarget);
         _currentTarget = null;

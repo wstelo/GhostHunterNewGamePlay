@@ -11,7 +11,7 @@ public class MixingDefenderCollector
     public bool IsEmpty { get; private set; } = true;
     public int Count { get; private set; }
 
-    public void AddElement(ElementTypes type, int count)
+    public void Merge(ElementTypes type, int count)
     {
         if(count >= 0)
         {
@@ -19,6 +19,7 @@ public class MixingDefenderCollector
             {
                 _elementTypes.Add(type);
                 Count = count;
+                IsEmpty = false;
             }
             else
             {
@@ -28,7 +29,7 @@ public class MixingDefenderCollector
                 {
                     Count = count;
                 }
-            }
+            }         
         }
     }
 

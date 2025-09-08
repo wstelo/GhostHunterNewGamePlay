@@ -11,7 +11,6 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     [SerializeField] private MultiColorAreaGenerator _colorGenerator;
 
     private StateMachine _stateMachine;
-
     private SpawnersHandler _spawnerHandler;
     private float _attackDelay = 0.5f;
 
@@ -21,8 +20,7 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     public DefenderAttackTypes AttackType { get; private set; }
     public ProjectileTypes ProjectileType { get; private set; }                           ///////////////////////////////////////     DATA HOLDER REQUIRED
     public DefenderTypes DefenderType { get; private set; }
-    public ElementTypes ElementType { get; private set; }
-    public Color Color { get; private set; } = Color.white;
+    public List<ElementTypes> ElementTypes { get; private set; }
 
     private void Awake()
     {
@@ -35,21 +33,20 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         _stateMachine.FixedUpdate();
     }
 
-    public void Init(ElementTypes type, Color color, SpawnersHandler spawnerHandler, int projectileCount, DefenderData config)
+    public void Init(List<ElementTypes> types, List<Color> color, SpawnersHandler spawnerHandler, int projectileCount, DefenderData config)
     {
         AttackType = config.AttackTypes;
         ProjectileType = config.ProjectileType;
         DefenderType = config.DefenderType;
         ProjectileContainer.Recharge(projectileCount);
         _spawnerHandler = spawnerHandler;
-        ElementType = type;
-        Color = color;
+        ElementTypes = types;
 
-        _colorGenerator.Init(new List<Color> { color});
+        _colorGenerator.Init(color);
 
         _stateMachine = new StateMachine();
-        _stateMachine.AddState(new DefenderAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementType, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
-        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementType));
+        _stateMachine.AddState(new DefenderAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
+        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementTypes));
         _stateMachine.SetState<DefenderAttackState>();
     }
 

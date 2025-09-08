@@ -11,7 +11,7 @@ public class ProjectileCell
         Color = color;
     }
 
-    public ElementTypes Type { get; }
-    public int Count { get; set; }
-    public Color Color { get; set; }
+    public ElementTypes Type { get; private set; }
+    public int Count { get; private set; }
+    public Color Color { get; private set; }
 }
