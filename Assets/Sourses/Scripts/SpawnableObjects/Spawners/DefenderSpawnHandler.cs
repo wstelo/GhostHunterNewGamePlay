@@ -6,19 +6,19 @@ public class DefenderSpawnHandler
     private MixingArea _mixingArea;
     private UnitViewHandler _unitViewHandler;
     private SpawnersHandler _spawnersHandler;
-    private DefenderData _currentDefenderData;
+  //  private DefenderData _currentDefenderData;
     private ElementTypes _currentDefenderElementType;
     private List<ElementTypes> _currentDefenderElementTypes = new List<ElementTypes>();
 
-    public DefenderSpawnHandler(UnitViewHandler unitViewHandler, SpawnersHandler spawnersHandler, DefenderData currentDefenderData, MixingArea mixingArea)
-    {
-        _unitViewHandler = unitViewHandler;
-     //   _unitViewHandler.PlatformDetected += SpawnDefender;                 /////////////////////////////////////
-        _currentDefenderData = currentDefenderData;        
-        _spawnersHandler = spawnersHandler;
-        _mixingArea = mixingArea;
-      //  _mixingArea.PlatformDetected += SpawnMultiDefender;
-    }
+    //public DefenderSpawnHandler(UnitViewHandler unitViewHandler, SpawnersHandler spawnersHandler, DefenderData currentDefenderData, MixingArea mixingArea)
+    //{
+    //    _unitViewHandler = unitViewHandler;
+    // //   _unitViewHandler.PlatformDetected += SpawnDefender;                 /////////////////////////////////////
+    //    _currentDefenderData = currentDefenderData;        
+    //    _spawnersHandler = spawnersHandler;
+    //    _mixingArea = mixingArea;
+    //  //  _mixingArea.PlatformDetected += SpawnMultiDefender;
+    //}
 
     //private void SpawnDefender(UnitPlatform platform, UnitButton button)
     //{

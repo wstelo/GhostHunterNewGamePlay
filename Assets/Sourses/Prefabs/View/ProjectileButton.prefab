@@ -94,7 +94,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35.85
+  m_fontSize: 40
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -274,7 +274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cellLayer:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 640
 --- !u!114 &8613746487113604019
 MonoBehaviour:
   m_ObjectHideFlags: 0

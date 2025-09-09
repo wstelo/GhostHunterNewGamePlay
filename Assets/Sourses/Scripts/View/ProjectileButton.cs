@@ -15,7 +15,7 @@ public class ProjectileButton : MonoBehaviour
 
     private void DetectDataHolder(CellDataHolder dataHolder)
     {
-        dataHolder.AddCell(_cell);
+        dataHolder.AddCells(_cell);
     }
 
     public void Init(ProjectileCell projectileCell)

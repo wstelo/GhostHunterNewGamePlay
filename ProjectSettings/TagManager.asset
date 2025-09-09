@@ -14,9 +14,9 @@ TagManager:
   - Water
   - UI
   - SpawnablePlatform
-  - ObjectPreviewer
+  - UnitPlatform
   - Terrain
-  - ButtonCell
+  - MixingButton
   - 
   - 
   - 

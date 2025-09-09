@@ -6,11 +6,10 @@ public class CellHandler
 {
     private List<ElementConfig> _elementConfigs = new List<ElementConfig>();
     private List<ElementTypes> _levelTypes = new List<ElementTypes>();
-    private EnemySpawnHandler _enemySpawnHandler;
+    private EnemySpawnHandler _enemySpawnHandler;         ///////////////////
 
-    public CellHandler(EnemySpawnHandler enemySpawnHandler,List<ElementTypes> elementTypes, List<ElementConfig> elementConfigs)
+    public CellHandler(List<ElementTypes> elementTypes, List<ElementConfig> elementConfigs)
     {
-        _enemySpawnHandler = enemySpawnHandler;
         _levelTypes = elementTypes;
         _elementConfigs = elementConfigs;
     }

@@ -33,10 +33,10 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         _stateMachine.FixedUpdate();
     }
 
-    public void Init(List<ElementTypes> types, List<Color> color, SpawnersHandler spawnerHandler, int projectileCount, DefenderData config)
+    public void Init(List<ElementTypes> types, List<Color> color, SpawnersHandler spawnerHandler, int projectileCount, DefenderConfig config)
     {
         AttackType = config.AttackTypes;
-        ProjectileType = config.ProjectileType;
+        ProjectileType = config.ProjectileTypes;
         DefenderType = config.DefenderType;
         ProjectileContainer.Recharge(projectileCount);
         _spawnerHandler = spawnerHandler;

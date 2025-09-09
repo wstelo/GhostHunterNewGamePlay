@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Reflex.Attributes;
 using UnityEngine;
 
 public class SpawnersHandler
@@ -10,26 +11,22 @@ public class SpawnersHandler
     private Dictionary<DefenderTypes, SpawnableObjectSpawner<Defender>> _defenderSpawners = new Dictionary<DefenderTypes, SpawnableObjectSpawner<Defender>>();
     private Dictionary<ProjectileTypes, SpawnableObjectSpawner<Projectile>> _projectileSpawners = new Dictionary<ProjectileTypes, SpawnableObjectSpawner<Projectile>>();
 
-    private Dictionary<EnemyTypes, EnemyData> _enemiesData = new Dictionary<EnemyTypes, EnemyData>();
-    private Dictionary<DefenderTypes, DefenderData> _defendersData = new Dictionary<DefenderTypes, DefenderData>();
-    private Dictionary<ProjectileTypes, ProjectileData> _projectileData = new Dictionary<ProjectileTypes, ProjectileData>();
+    private Dictionary<EnemyTypes, EnemyConfig> _enemiesData = new Dictionary<EnemyTypes, EnemyConfig>();
+    private Dictionary<DefenderTypes, DefenderConfig> _defendersData = new Dictionary<DefenderTypes, DefenderConfig>();
+    private Dictionary<ProjectileTypes, ProjectileConfig> _projectileData = new Dictionary<ProjectileTypes, ProjectileConfig>();
 
-    private List<ElementConfig> _elementConfigs;
+    private List<ElementConfig> _elementConfigs = new List<ElementConfig>();
 
-    public SpawnersHandler(List<EnemyData> enemiesData, DefenderData defenderData, List<ProjectileData> projectileData, List<ElementConfig> elementConfigs)
+    public SpawnersHandler()
     {
         _spawnableObjectFactory = new SpawnableObjectFactory();
-        _elementConfigs = elementConfigs;
-
-        SetParameters(enemiesData, defenderData, projectileData);
     }
 
-    public SpawnersHandler(ConfigsRepository repository)
+    public void Init(ConfigsRepository configRepository)
     {
-        _spawnableObjectFactory = new SpawnableObjectFactory();
+        _elementConfigs = configRepository.ConfigList;
 
-        _elementConfigs = repository.ConfigList;
-
+        SetParameters(configRepository.EnemyConfigs, configRepository.DefenderConfigs.First(), configRepository.ProjectileConfigs);
     }
 
     private TReturn Spawn<TKey, TReturn>(
@@ -56,7 +53,7 @@ public class SpawnersHandler
 
     public Defender SpawnDefender(DefenderTypes requiredType, List<ElementTypes> requiredElement, Vector3 position, int projectileCount)
     {
-        _defendersData.TryGetValue(requiredType, out DefenderData data);
+        _defendersData.TryGetValue(requiredType, out DefenderConfig data);
 
         return Spawn(
             _defenderSpawners,
@@ -83,7 +80,7 @@ public class SpawnersHandler
             projectile => projectile.Init(requiredElements, GetColorByElementType(requiredElements)));
     }
 
-    private void SetParameters(List<EnemyData> enemiesData, DefenderData defendersData, List<ProjectileData> projectileData)
+    private void SetParameters(List<EnemyConfig> enemiesData, DefenderConfig defendersData, List<ProjectileConfig> projectileData)
     {
         foreach (var item in enemiesData)
         {

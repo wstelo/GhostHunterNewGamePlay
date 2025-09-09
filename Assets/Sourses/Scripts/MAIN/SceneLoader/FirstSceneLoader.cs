@@ -22,6 +22,6 @@ public class FirstSceneLoader : MonoBehaviour
 
         yield return new WaitKeyDown();
 
-        yield return _loader.LoadScene("MainMenu");
+        yield return _loader.LoadScene("FirstLevel 1");
     }
 }

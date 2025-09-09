@@ -16,6 +16,12 @@ public class MixingArea : MonoBehaviour
     private void Awake()
     {
         _cellDataHolder.CellsChanged += Init;
+        _dragHandler.DataHolderDetected += DetectDataHolder;
+    }
+
+    private void DetectDataHolder(CellDataHolder dataHolder)
+    {
+        dataHolder.AddCells(_cellDataHolder.GetCurrentCells());
     }
 
     private void Init(List<ProjectileCell> cells)
