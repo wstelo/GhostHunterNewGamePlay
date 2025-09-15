@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dd5f9a2aafb4e141945a8737f16aca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _countText: {fileID: 1444380755202566312}
+  _countText: {fileID: 6444571255162794126}
   _cellDataHolder: {fileID: 7510027371066107817}
 --- !u!114 &7510027371066107817
 MonoBehaviour:
@@ -351,7 +351,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: aa09dddc7c5f24d0983e3a6958f80a1c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 92941183ea08b4de6906e406535ef99e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

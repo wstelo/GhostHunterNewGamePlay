@@ -1,12 +1,11 @@
 using Reflex.Core;
 using UnityEngine;
+using UnityEngine.Splines;
 
 public class LevelInstaller : MonoBehaviour, IInstaller
 {
-     private SpawnersHandler _unitSpawnerHandler = new SpawnersHandler();
-
     public void InstallBindings(ContainerBuilder containerBuilder)
     {
-        containerBuilder.AddSingleton(_unitSpawnerHandler);
+        containerBuilder.AddSingleton(typeof(SpawnersHandler));
     }
 }

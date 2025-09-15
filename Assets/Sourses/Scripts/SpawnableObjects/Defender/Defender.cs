@@ -17,10 +17,11 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     public event Action<Defender> Disabled;
 
     public IRechargable ProjectileContainer;                                  ///////////////////////////// ???????????????? под интерфейсом мейби?  ЗАЧЕМ ??????????????????
-    public DefenderAttackTypes AttackType { get; private set; }
+    public DefenderAttackTypes AttackType { get; private set; }         /////////////////// nahui?
     public ProjectileTypes ProjectileType { get; private set; }                           ///////////////////////////////////////     DATA HOLDER REQUIRED
-    public DefenderTypes DefenderType { get; private set; }
+    public DefenderTypes DefenderType { get; private set; }                //////////////////////// nahui?
     public List<ElementTypes> ElementTypes { get; private set; }
+    public List<Color> Colors { get; private set; }                         //////////////           nahui?
 
     private void Awake()
     {
@@ -41,17 +42,18 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         ProjectileContainer.Recharge(projectileCount);
         _spawnerHandler = spawnerHandler;
         ElementTypes = types;
-
-        _colorGenerator.Init(color);
+        Colors = color;
+        _colorGenerator.Init(Colors);
 
         _stateMachine = new StateMachine();
         _stateMachine.AddState(new DefenderAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
-        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementTypes));
+        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementTypes));          /////////////// Инициализация стейтов?
         _stateMachine.SetState<DefenderAttackState>();
     }
 
     public void Disable()
     {
+        ProjectileContainer.Clear();
         Disabled?.Invoke(this);
     }
 }

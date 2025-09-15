@@ -1,12 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
 public class ProjectileButton : MonoBehaviour
 {
     [SerializeField] private ProjectileButtonDragHandler _dragHandler;
-    [SerializeField] private ProjectileButtonView _view;
+    [SerializeField] private ProjectileButtonView _textView;
 
-    private ProjectileCell _cell ;
+    private ProjectileCell _cells;
 
     private void Awake()
     {
@@ -15,17 +17,17 @@ public class ProjectileButton : MonoBehaviour
 
     private void DetectDataHolder(CellDataHolder dataHolder)
     {
-        dataHolder.AddCells(_cell);
+        dataHolder.AddCell(new MultiProjectileCell(_cells.ElementType, _cells.Count, _cells.Color, Deactivate));
     }
 
     public void Init(ProjectileCell projectileCell)
     {
         gameObject.SetActive(true);
-        _cell = projectileCell;
-        _view.Init(_cell.Count, _cell.Color);
+        _cells = projectileCell;                               /////////////////////////////////////////////// huinya?
+        _textView.Init(_cells.Count, _cells.Color);
     }
 
-    public void Deactivate()
+    public void Deactivate()            
     {
         gameObject.SetActive(false);
     }

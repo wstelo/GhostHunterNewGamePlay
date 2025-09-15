@@ -288,7 +288,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dragHandler: {fileID: 6319629919502360364}
-  _view: {fileID: 6330309565656095785}
+  _textView: {fileID: 6330309565656095785}
 --- !u!114 &6330309565656095785
 MonoBehaviour:
   m_ObjectHideFlags: 0

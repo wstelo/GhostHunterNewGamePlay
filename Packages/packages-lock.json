@@ -7,6 +7,13 @@
       "dependencies": {},
       "hash": "c6093fd0233c77a6d05d62ec5c139691d76b5d87"
     },
+    "com.gustavopsantos.reflex": {
+      "version": "https://github.com/gustavopsantos/reflex.git?path=/Assets/Reflex/#12.0.2",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "3fe92ae6c67ca222841f984a51d67cf27bcb929d"
+    },
     "com.neuecc.unirx": {
       "version": "https://github.com/neuecc/UniRx.git?path=Assets/Plugins/UniRx/Scripts",
       "depth": 0,

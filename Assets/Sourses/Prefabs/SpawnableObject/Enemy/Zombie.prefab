@@ -1395,7 +1395,6 @@ GameObject:
   - component: {fileID: 751106487409334993}
   - component: {fileID: 2492863111209137951}
   - component: {fileID: 1656653168093438469}
-  - component: {fileID: 942582239433007968}
   - component: {fileID: -17152809017025172}
   - component: {fileID: 708519850970643601}
   m_Layer: 0
@@ -1413,7 +1412,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7938724938258907938}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.15047581, z: 0, w: 0.9886137}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
@@ -1422,7 +1421,7 @@ Transform:
   - {fileID: 3881504158840940174}
   - {fileID: 8834254868841287578}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -17.309, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2492863111209137951
 Animator:
   serializedVersion: 5
@@ -1457,19 +1456,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _colorGenerator: {fileID: 8875532476185566106}
-  _enemyMover: {fileID: 942582239433007968}
---- !u!114 &942582239433007968
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7938724938258907938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9baece240b8ee14ba4f310f095fc13f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!136 &-17152809017025172
 CapsuleCollider:
   m_ObjectHideFlags: 0

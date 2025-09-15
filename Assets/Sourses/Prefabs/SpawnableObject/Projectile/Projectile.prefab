@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 8394681570495595147}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 7.374755, y: -0.0000013960741, z: -11.479344}
   m_LocalScale: {x: 0.5550496, y: 0.5550496, z: 0.5550496}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a91f586217a89da4ca8725ea8b861bcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 30
+  _moveSpeed: 10
 --- !u!114 &2036832828605001289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94,7 +94,6 @@ MonoBehaviour:
   particleSystems:
   - {fileID: 5926216540903412348}
   - {fileID: 3490350818977294299}
-  Type: 0
 --- !u!1001 &5717859775403113830
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Reflex.Attributes;
 using UnityEngine;
+using UnityEngine.Splines;
 
 public class SpawnersHandler
 {
@@ -17,13 +19,9 @@ public class SpawnersHandler
 
     private List<ElementConfig> _elementConfigs = new List<ElementConfig>();
 
-    public SpawnersHandler()
+    public SpawnersHandler(ConfigsRepository configRepository)
     {
         _spawnableObjectFactory = new SpawnableObjectFactory();
-    }
-
-    public void Init(ConfigsRepository configRepository)
-    {
         _elementConfigs = configRepository.ConfigList;
 
         SetParameters(configRepository.EnemyConfigs, configRepository.DefenderConfigs.First(), configRepository.ProjectileConfigs);
@@ -51,7 +49,7 @@ public class SpawnersHandler
         return null;
     }
 
-    public Defender SpawnDefender(DefenderTypes requiredType, List<ElementTypes> requiredElement, Vector3 position, int projectileCount)
+    public Defender SpawnDefender(DefenderTypes requiredType, List<ElementTypes> requiredElement, Vector3 position, int projectileCount)          ////////////////////////////////////////// 
     {
         _defendersData.TryGetValue(requiredType, out DefenderConfig data);
 
@@ -62,13 +60,13 @@ public class SpawnersHandler
             defender => defender.Init(requiredElement, GetMultipleElementColor(requiredElement), this, projectileCount, data));
     }
 
-    public Enemy SpawnEnemy(EnemyTypes requiredType, List<ElementTypes> reqiredElements, Vector3 position)
-    {
+    public Enemy SpawnEnemy (EnemyTypes requiredType, List<ElementTypes> reqiredElements, Vector3 position, int healthCount, SplineContainer splineContainer, float speed)
+    {        
         return Spawn(
             _enemySpawners,
             requiredType,
             position,
-            enemy => enemy.Init(reqiredElements, requiredType, GetMultipleElementColor(reqiredElements)));
+            enemy => enemy.Init(reqiredElements, GetMultipleElementColor(reqiredElements), healthCount, splineContainer, speed));
     }
 
     public Projectile SpawnProjectile(ProjectileTypes requiredType, ElementTypes requiredElements, Vector3 position)

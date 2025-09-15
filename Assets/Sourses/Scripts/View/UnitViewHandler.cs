@@ -11,7 +11,7 @@ public class UnitViewHandler
     private int _repeatableUnitCount = 0;
 
     public event Action<UnitPlatform, ProjectileButton> PlatformDetected;
-    public event Action<MixingArea, ProjectileButton> MixingAreaDetected;
+    public event Action<MultiProjectileButton, ProjectileButton> MixingAreaDetected;
 
     public UnitViewHandler(CellHandler projectileCellHandler, ProjectileButtonHandler buttonHandler)
     {

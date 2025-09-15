@@ -12,4 +12,5 @@ public interface IRechargable                               ////////////////////
 
     void Recharge(int count);
     void DecreaseCount();
+    void Clear();
 }

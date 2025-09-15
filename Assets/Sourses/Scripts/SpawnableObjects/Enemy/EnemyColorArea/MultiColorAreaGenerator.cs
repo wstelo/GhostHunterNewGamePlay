@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class MultiColorAreaGenerator : MonoBehaviour
 {
@@ -11,6 +12,16 @@ public class MultiColorAreaGenerator : MonoBehaviour
     private float _maxFillValue;
     private float _maxCirlceDegrees = 360;
     private List<AreaFiller> _currentArea = new List<AreaFiller>();
+
+    public void Clear()
+    {
+        foreach (AreaFiller areaFiller in _currentArea)
+        {
+            Destroy(areaFiller.gameObject);
+        }
+
+        _currentArea.Clear();
+    }
 
     public void Init(List<Color> colors)
     {

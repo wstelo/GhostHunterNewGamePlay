@@ -11,10 +11,9 @@ public class LevelEntryPoint : MonoBehaviour
     [SerializeField] private InputHandler _inputHandler;
     [SerializeField] private EnemySpawnPointDetector _spawnDetector;
     [SerializeField] private ProjectileButtonHandler _projectileButtonHandler;
-    [SerializeField] private SplineContainer _spline;
+    [SerializeField] private SplineContainer _splineContainer;
     [SerializeField] private TextAsset _jsonLevelConfig;
 
-    private DefenderSpawnHandler _defenderSpawnHandler;
     private EnemySpawnHandler _enemySpawnHandler;
 
     private CellHandler _cellHandler;
@@ -29,25 +28,13 @@ public class LevelEntryPoint : MonoBehaviour
 
     private void Awake()
     {
-        _unitSpawnerHandler.Init(_configRepository);
         _levelConfig = GetLevelConfig();
         _elementTypesOnLevel = GetCurrentElementTypes(_levelConfig);
 
         _cellHandler = new CellHandler(_elementTypesOnLevel, _configRepository.ConfigList);
         _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler);
         
-        _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _spline, _spawnDetector);
-
-
-
-
-
-
-
-
-       
-
-       // _defenderSpawnHandler = new DefenderSpawnHandler(_unitViewHandler, _unitSpawnerHandler, _defendersData.First(), _mixingArea);
+        _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _splineContainer, _spawnDetector);
     }
 
     //private DefenderConfig GetCurrentLevelDefenderData(DefenderConfig defenderConfig)                                                                                          /////////////////////////////////////////////////

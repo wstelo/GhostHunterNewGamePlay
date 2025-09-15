@@ -7,7 +7,7 @@ public class ProjectileMover : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed = 1;
 
-    private Enemy _currentTarget;
+    private IDamageable _currentTarget;
     private float _minDistanceToTarget = 1f;
     private Vector3 _offsetY = new Vector3(0,1,0);
 
@@ -17,18 +17,18 @@ public class ProjectileMover : MonoBehaviour
     {
         if(_currentTarget != null)
         {
-            transform.position = Vector3.MoveTowards(transform.position, _currentTarget.transform.position + _offsetY, _moveSpeed * Time.fixedDeltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, _currentTarget.Transform.position + _offsetY, _moveSpeed * Time.fixedDeltaTime);
 
-            if (transform.position.IsEnoughClose(_currentTarget.transform.position, _minDistanceToTarget))
+            if (transform.position.IsEnoughClose(_currentTarget.Transform.position, _minDistanceToTarget))
             {
                 TargetAchieved?.Invoke();
-                _currentTarget.Disable();
+                _currentTarget.TakeDamage();
                 _currentTarget = null;
             }
         }
     }
 
-    public void Init(Enemy target)
+    public void Init(IDamageable target)
     {
         _currentTarget = target;
     }

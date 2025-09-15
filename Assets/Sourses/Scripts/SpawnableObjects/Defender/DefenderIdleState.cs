@@ -22,10 +22,10 @@ public class DefenderIdleState : State
 
     public override void FixedUpdate()
     {
-        //if (_detector.GetNearbyEnemyByType(_currentElement) != null)                /////////////////////////////////////////////////////
-        //{
-        //    StateMachine.SetState<DefenderAttackState>();
-        //}
+        if (_detector.GetNearbyEnemy(_currentElement) != null)                /////////////////////////////////////////////////////
+        {
+            StateMachine.SetState<DefenderAttackState>();
+        }
     }
 
     public override void Exit()

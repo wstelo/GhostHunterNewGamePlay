@@ -1,68 +1,27 @@
-using System;
-using System.Linq;
-using Unity.Mathematics;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
 
-public class EnemyMover : MonoBehaviour
+public class EnemyMover
 {
-    private int _allowedSegmentCountForNearestPoint = 10;
-    private Vector3 _lastPositionOnSpline = Vector3.zero;
-    private float _splineValue = 0f;
-    private float _speed = 2f;
-    private float _splineLength;
-    private Spline _spline;
+    private IBaseMovement _movement;
 
-    public void Init(SplineContainer splineContainer, float speed)
+    public void SetBehavior(IBaseMovement movement)
     {
-        _speed = speed;
-        _spline = splineContainer.Splines.First();
-        _splineLength = _spline.GetLength();
+        _movement = movement;
     }
 
-    private void FixedUpdate()
+    public void Move(float deltaTime)
     {
-        if (_spline != null)
+        if (_movement != null)
         {
-            //if (GetNearbySplinePointAtPercent() > _minDistance)
-            //{
-            //    transform.position = Vector3.MoveTowards(transform.position, _lastPositionOnSpline, _speed * Time.fixedDeltaTime);
-            //}
-            //else
-            //{
-            //    MoveToNextPoint();
-            //}
-
-            MoveToNextPoint();
+            _movement.Update(deltaTime);
         }
     }
 
-    public void ResetPosition()
+    public void Reset()
     {
-        _splineValue = 0f;
-    }
-
-    private void MoveToNextPoint()
-    {
-        float distance = _speed * Time.deltaTime;
-        float deltaT = distance / _splineLength;
-
-        _splineValue += deltaT;
-
-        if (_splineValue >= 1f)
-        {
-            _splineValue = 1f;
-        }
-
-        _lastPositionOnSpline = SplineUtility.EvaluatePosition(_spline, _splineValue);
-        transform.LookAt(_lastPositionOnSpline);
-        transform.position = _lastPositionOnSpline;     
-    }
-
-    private float GetNearbySplinePointAtPercent()
-    {
-        float distance = SplineUtility.GetNearestPoint(_spline, new float3(transform.position.x, transform.position.y, transform.position.z), out float3 position, out float currentPercent, _allowedSegmentCountForNearestPoint);
-
-        return distance;
+        _movement = null;
     }
 }

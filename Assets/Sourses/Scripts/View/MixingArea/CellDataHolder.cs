@@ -2,95 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class CellDataHolder : MonoBehaviour
 {
-    private Dictionary<ElementTypes, ProjectileCell> _cells = new Dictionary<ElementTypes, ProjectileCell>();
-
-    public event Action<List<ProjectileCell>> CellsChanged;
-
-    public List<ProjectileCell> GetCurrentCells()
+    public event Action<MultiProjectileCell> CellChanged;
+ 
+    public void AddCell(MultiProjectileCell cell)
     {
-        return _cells.Values.ToList();
-    }
-
-    public void AddCells(List<ProjectileCell> cells)
-    {
-        bool isChanged = false;
-
-        if(cells == null || cells.Count == 0)
+        if (cell == null)
         {
             return;
         }
-
-        if(_cells.Count == 0)
-        {
-            foreach (ProjectileCell cell in cells)
-            {
-                _cells.Add(cell.ElementType, cell);
-                isChanged = true;
-            }
-        }
         else
         {
-            foreach (ProjectileCell cell in cells)
-            {
-                if(_cells.TryGetValue(cell.ElementType, out ProjectileCell currentCell))
-                {
-                    if(cell.Count > currentCell.Count)
-                    {
-                        _cells[currentCell.ElementType] = cell;
-                        isChanged = true;
-                    }
-                }
-                else
-                {
-                    _cells.Add(cell.ElementType, cell);
-                    isChanged = true;
-                }
-            }
+            CellChanged?.Invoke(cell);
         }
-
-        if(isChanged == true)
-        {
-            CellsChanged?.Invoke(_cells.Values.ToList());
-        }
-    }
-
-    public void AddCells(ProjectileCell cell)
-    {
-        bool isChanged = false;
-
-        if (_cells.Count == 0)
-        {
-            _cells.Add(cell.ElementType, cell);
-            isChanged = true;
-        }
-        else
-        {           
-            if(_cells.TryGetValue(cell.ElementType, out ProjectileCell currentCell))
-            {
-                if (cell.Count > currentCell.Count)
-                {
-                    _cells[currentCell.ElementType] = cell;
-                    isChanged = true;
-                }
-            }
-            else
-            {              
-                _cells.Add(cell.ElementType, cell);
-                isChanged = true;
-            }
-        }
-
-        if (isChanged == true)
-        {
-            CellsChanged?.Invoke(_cells.Values.ToList());
-        }
-    }
-
-    public void Clear()
-    {
-        _cells.Clear();
     }
 }

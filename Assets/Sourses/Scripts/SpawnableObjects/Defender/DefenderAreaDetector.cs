@@ -4,34 +4,25 @@ using UnityEngine;
 
 public class DefenderAreaDetector : MonoBehaviour
 {
-    private List<Enemy> _currentEnemies = new List<Enemy>();
+    private List<IDamageable> _currentEnemies = new List<IDamageable>();
 
-    public Enemy GetNearbyEnemyByType(ElementTypes type)            /////////////////////////////////////////////////
+    public IDamageable GetNearbyEnemy(List<ElementTypes> elementTypes)
     {
-        List<Enemy> currentEnemies = new List<Enemy>();
-
-        foreach (var item in _currentEnemies)
+        foreach (var enemy in _currentEnemies)
         {
-            if (item.IsMultiType == false)
+            if (elementTypes.ExactMatch(enemy.ElementTypes))
             {
-                if(item.ElementTypes.First() == type)
-                {
-                    currentEnemies.Add(item);
-                }               
+                return enemy;
             }
+
         }
 
-        if (currentEnemies.Count == 0)
-        {
-            return null;
-        }
-
-        return currentEnemies.First();
+        return null;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out Enemy enemy))
+        if (other.TryGetComponent(out IDamageable enemy))
         {
             _currentEnemies.Add(enemy);
         }
@@ -39,13 +30,13 @@ public class DefenderAreaDetector : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out Enemy enemy))
+        if (other.TryGetComponent(out IDamageable enemy))
         {
             _currentEnemies.Remove(enemy);
         }
     }
 
-    public void Delete(Enemy enemy)
+    public void Delete(IDamageable enemy)
     {
         _currentEnemies.Remove(enemy);
     }

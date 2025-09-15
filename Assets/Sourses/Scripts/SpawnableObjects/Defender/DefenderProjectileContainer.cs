@@ -29,4 +29,9 @@ public class DefenderProjectileContainer : IRechargable
             CountChanged?.Invoke(Count);
         }
     }
+
+    public void Clear()
+    {
+        Count = 0;
+    }
 }

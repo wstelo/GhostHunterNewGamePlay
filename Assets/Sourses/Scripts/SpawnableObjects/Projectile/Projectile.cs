@@ -31,8 +31,8 @@ public class Projectile : MonoBehaviour, ISpawnableObject<Projectile>
             main.startColor = color;
         }
     }
-
-    public void SetTarget(Enemy target)
+    
+    public void SetTarget(IDamageable target)
     {
         _mover.Init(target);
     }

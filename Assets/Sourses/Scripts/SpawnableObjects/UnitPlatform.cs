@@ -1,67 +1,90 @@
-using UnityEngine;
-using TMPro;
-using System.Collections.Generic;
-using Reflex.Attributes;
 using System.Linq;
-using JetBrains.Annotations;
+using Reflex.Attributes;
+using UnityEngine;
 
 public class UnitPlatform : MonoBehaviour
 {
-    [SerializeField] private TMP_Text _countText;
+    [SerializeField] private ProjectileButtonView _countText;
     [SerializeField] private CellDataHolder _cellDataHolder;
 
-    private int _defaultValue = 0;
+    private MultiProjectileCell _currentCell;
 
     [Inject] private SpawnersHandler _spawnersHandler;
 
-    public Defender CurrentDefender {  get; private set; }
-    public bool IsEmpty { get; private set; } = true;
+    public Defender CurrentDefender { get; private set; }
 
     private void Awake()
     {
-        _countText.text = _defaultValue.ToString();
-        _cellDataHolder.CellsChanged += Occupy;
+        _countText.ResetCount();
+        _cellDataHolder.CellChanged += Occupy;
     }
 
-    private void Occupy(List<ProjectileCell> cells)
+    private void Occupy(MultiProjectileCell cell)
     {
-        IsEmpty = false;
-        CurrentDefender = SpawnDefender(cells);
-        CurrentDefender.Disabled += Clear;
-        RefreshCountPanel(CurrentDefender.ProjectileContainer.Count);
-        CurrentDefender.ProjectileContainer.CountChanged += RefreshCountPanel;
+        bool isChanged = false;
+
+        if (CurrentDefender == null)
+        {
+            isChanged = true;
+            _currentCell = cell;
+        }
+        else
+        {
+            if (cell.ElementTypes.Count == 1)
+            {
+                if (_currentCell.ElementTypes.Count > 1)
+                {
+                    foreach (var type in _currentCell.ElementTypes)
+                    {
+                        if (type == cell.ElementTypes.First())
+                        {
+                            isChanged = true;
+                            int count = CurrentDefender.ProjectileContainer.Count;
+                            _currentCell = cell;
+                            _currentCell.SetCount(count);
+                            CurrentDefender.Disable();
+                        }
+                    }
+                }
+                else
+                {
+                    if(cell.ElementTypes.First() == _currentCell.ElementTypes.First())
+                    {
+                        isChanged = true;
+                        int count = CurrentDefender.ProjectileContainer.Count;
+                        _currentCell = cell;
+                        _currentCell.SetCount(_currentCell.Count + count);                                 //////////////////////////////////// multi?
+                        CurrentDefender.Disable();
+                    }
+                }
+            }
+        }
+
+        if (isChanged)
+        {
+            CurrentDefender = SpawnDefender(_currentCell);
+            CurrentDefender.Disabled += Clear;
+            CurrentDefender.ProjectileContainer.CountChanged += RefreshCountPanel;
+            RefreshCountPanel(CurrentDefender.ProjectileContainer.Count);
+            _currentCell.Consume();
+        }
     }
 
     private void Clear(Defender currentDefender)
     {
-        IsEmpty = true;
-        RefreshCountPanel(_defaultValue);
+        _countText.ResetCount();
         CurrentDefender.ProjectileContainer.CountChanged -= RefreshCountPanel;
         CurrentDefender.Disabled -= Clear;
         CurrentDefender = null;
-        _cellDataHolder.Clear();
     }
 
-    private Defender SpawnDefender(List<ProjectileCell> cells)
+    private Defender SpawnDefender(MultiProjectileCell cell)
     {
-        List<ElementTypes> cellTypes = new List<ElementTypes>();
-        int count = 0;
-
-        foreach (var cell in cells)
-        {
-            cellTypes.Add(cell.ElementType);
-
-            if (cell.Count > count)
-            {
-                count = cell.Count;
-            }
-        }
-
-         return _spawnersHandler.SpawnDefender(DefenderTypes.Magician, cellTypes, transform.position, count);
+        return _spawnersHandler.SpawnDefender(DefenderTypes.Magician, cell.ElementTypes, transform.position, cell.Count);                 /////////////////////////////////////////////////////////  DEFENDERTYPE
     }
 
     private void RefreshCountPanel(int count)
     {
-        _countText.text = count.ToString();
+        _countText.Init(count, CurrentDefender.Colors.First());                                                    ////////////////////////////////////////////////
     }
 }

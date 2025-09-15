@@ -17,7 +17,7 @@ public class DefenderAttackState : State
     private Vector3 _spawnPosition;
 
     private UniTask _currentTask;
-    private Enemy _currentTarget;
+    private IDamageable _currentTarget;
 
     public DefenderAttackState(
         StateMachine stateMachine, 
@@ -42,17 +42,17 @@ public class DefenderAttackState : State
 
     public override void FixedUpdate()
     {
-        //_currentTarget = _detector.GetNearbyEnemyByType(_currentElement);
+        _currentTarget = _detector.GetNearbyEnemy(_currentElement);
 
-        //if( _currentTarget == null )
-        //{
-        //    StateMachine.SetState<DefenderIdleState>();
-        //}
+        if (_currentTarget == null)
+        {
+            StateMachine.SetState<DefenderIdleState>();
+        }
 
-        //if (_currentTarget != null && _currentTarget.ElementTypes.First() == _currentElement && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.Count > 0)            //////////////////////////////
-        //{
-        //    _currentTask = Attack();
-        //}
+        if (_currentTarget != null && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.Count > 0)            //////////////////////////////
+        {
+            _currentTask = Attack();
+        }
     }
 
     private async UniTask Attack()
@@ -72,7 +72,12 @@ public class DefenderAttackState : State
     {
         Projectile currentProjectile = _spawnerHandler.SpawnProjectile(_projectileType, _currentElement.First(), _spawnPosition);           //////////////////////////////////////// Add multi Projectile?
         currentProjectile.SetTarget(_currentTarget);
-        _detector.Delete(_currentTarget);
+
+        if(_currentTarget.IsLastHealth)
+        {
+            _detector.Delete(_currentTarget);
+        }
+
         _currentTarget = null;
         _animatorController.ProjectileSpawnPointEnded -= SpawnProjectile;
     }
