@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Cysharp.Threading.Tasks;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using System.Threading;
 
-public class DefenderAttackState : State
+public class TestAttackState : State
 {
     private IRechargable _projectileContainer;
     private DefenderAnimatorController _animatorController;
@@ -16,11 +18,10 @@ public class DefenderAttackState : State
     private List<ElementTypes> _currentElement;
     private Vector3 _spawnPosition;
 
-    private UniTask _currentTask;
     private IDamageable _currentTarget;
 
-    public DefenderAttackState(
-        StateMachine stateMachine, 
+    public TestAttackState(
+        StateMachine stateMachine,
         DefenceAreaDetector detector,
         SpawnersHandler spawnerHandler,
         float attackDelay,
@@ -40,25 +41,20 @@ public class DefenderAttackState : State
         _projectileContainer = projectileContainer;
     }
 
-    public override void FixedUpdate()
+    public override void Enter()
     {
         if(_currentTarget == null)
         {
             _currentTarget = _detector.GetNearbyEnemy(_currentElement);
         }
 
-        if (_currentTarget != null && _currentTask.Status != UniTaskStatus.Pending && _projectileContainer.Count > 0)            //////////////////////////////
+        if(_currentTarget != null )
         {
-            _currentTask = Attack();
-        }
-        
-        if (_currentTarget == null)
-        {
-            StateMachine.SetState<DefenderIdleState>();
+            Attack();
         }
     }
 
-    private async UniTask Attack()
+    private void Attack()
     {
         float defaultClipLength = _animatorController.GetAnimationLength(DefenderAnimationData.AttackClipName);
 
@@ -66,28 +62,32 @@ public class DefenderAttackState : State
 
         _animatorController.StartAttackAnimation(requiredSpeed);
         _animatorController.ProjectileSpawnPointEnded += SpawnProjectile;
-        _animatorController.AttackAnimationEnded += DecreaseProjectile;
-
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime));
     }
 
     private void SpawnProjectile()
     {
+        _animatorController.ProjectileSpawnPointEnded -= SpawnProjectile;
         Projectile currentProjectile = _spawnerHandler.SpawnProjectile(_projectileType, _currentElement.First(), _spawnPosition);           //////////////////////////////////////// Add multi Projectile?
+        
         currentProjectile.SetTarget(_currentTarget);
 
-        if(_currentTarget.IsLastHealth)
+        Debug.Log(_currentTarget);
+
+        if (_currentTarget.IsLastHealth)
         {
             _detector.Delete(_currentTarget);
         }
 
+        _projectileContainer.DecreaseCount();
         _currentTarget = null;
-        _animatorController.ProjectileSpawnPointEnded -= SpawnProjectile;
+
+        ChangeStateToIdleWithDelay().Forget();
     }
 
-    private void DecreaseProjectile()
+    private async UniTask ChangeStateToIdleWithDelay()
     {
-        _animatorController.AttackAnimationEnded -= DecreaseProjectile;
-        _projectileContainer.DecreaseCount();
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime));
+
+        StateMachine.SetState<DefenderIdleState>();
     }
 }

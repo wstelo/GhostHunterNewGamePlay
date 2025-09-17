@@ -1394,9 +1394,10 @@ GameObject:
   m_Component:
   - component: {fileID: 751106487409334993}
   - component: {fileID: 2492863111209137951}
-  - component: {fileID: 1656653168093438469}
   - component: {fileID: -17152809017025172}
   - component: {fileID: 708519850970643601}
+  - component: {fileID: 639601674116717232}
+  - component: {fileID: 5722366025414529697}
   m_Layer: 0
   m_Name: Zombie
   m_TagString: Untagged
@@ -1443,19 +1444,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1656653168093438469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7938724938258907938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee933e95bd85e7f438d32ce03cec4d52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colorGenerator: {fileID: 8875532476185566106}
 --- !u!136 &-17152809017025172
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1506,6 +1494,32 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &639601674116717232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7938724938258907938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 460741eb11a6be54c9c85e6043002b7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colorGenerator: {fileID: 8875532476185566106}
+  _graveDetector: {fileID: 5722366025414529697}
+--- !u!114 &5722366025414529697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7938724938258907938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e53c13989629a4598283fa9573ce0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7955628037045842085
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,10 +9,12 @@ using static UnityEditor.Progress;
 public class LevelEntryPoint : MonoBehaviour
 {
     [SerializeField] private InputHandler _inputHandler;
-    [SerializeField] private EnemySpawnPointDetector _spawnDetector;
     [SerializeField] private ProjectileButtonHandler _projectileButtonHandler;
     [SerializeField] private SplineContainer _splineContainer;
     [SerializeField] private TextAsset _jsonLevelConfig;
+    [SerializeField] private GraveTypeHandler _graveTypeHandler;
+
+    private float _distanceBetweenEnemies = GameStaticData.DistanceBetweenEnemies;                                   ////////////////////////////////////////////////
 
     private EnemySpawnHandler _enemySpawnHandler;
 
@@ -31,16 +33,13 @@ public class LevelEntryPoint : MonoBehaviour
         _levelConfig = GetLevelConfig();
         _elementTypesOnLevel = GetCurrentElementTypes(_levelConfig);
 
-        _cellHandler = new CellHandler(_elementTypesOnLevel, _configRepository.ConfigList);
+        _cellHandler = new CellHandler(_elementTypesOnLevel, _configRepository.ElementConfigs);
         _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler);
         
-        _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _splineContainer, _spawnDetector);
-    }
+        _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _splineContainer, _distanceBetweenEnemies, _levelConfig.LevelSpeed);
 
-    //private DefenderConfig GetCurrentLevelDefenderData(DefenderConfig defenderConfig)                                                                                          /////////////////////////////////////////////////
-    //{
-    //    return new DefenderData(defenderConfig.DefenderType, defenderConfig.Prefab, defenderConfig.HitEffect);
-    //}
+        _graveTypeHandler.Init(_levelConfig);
+    }
 
     private List<ElementTypes> GetCurrentElementTypes(LevelConfig levelConfig)
     {

@@ -9,4 +9,6 @@ public static class GameStaticData
     public const int MaximumProjectileCellNumber = 13;
     public const float StartAttackDelay = 1.5f;
     public const float LoadingScreenLoadingTime = 3f;
+    public const float DistanceBetweenEnemies = 1.6f;
+    public const float UnitPlatformRadius = 3f;
 }

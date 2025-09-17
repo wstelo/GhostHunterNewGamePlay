@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PointCollector : MonoBehaviour
 {
-    [SerializeField] private List<Transform> _targetPoints = new List<Transform>();
+    [SerializeField] private List<Transform> _targetPoints = new List<Transform>();                      /////////////////////////// Не нужен
 
     private int _maxColumnCount = GameStaticData.MaxColumnCount;
 

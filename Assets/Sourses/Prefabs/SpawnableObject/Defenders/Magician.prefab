@@ -74,9 +74,9 @@ GameObject:
   - component: {fileID: 666975411379563545}
   - component: {fileID: 1479577115237237561}
   - component: {fileID: 7323743885593425409}
-  - component: {fileID: 6280003255496109276}
   - component: {fileID: 6256600361791663417}
   - component: {fileID: 4685343896842008441}
+  - component: {fileID: 3339466784559568760}
   m_Layer: 0
   m_Name: Magician
   m_TagString: Untagged
@@ -138,20 +138,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defenderAnimatorController: {fileID: 6256600361791663417}
   _projectileSpawnPoint: {fileID: 2247207276240239424}
-  _defenceAreaDetector: {fileID: 6280003255496109276}
+  _defenceAreaDetector: {fileID: 3339466784559568760}
   _colorGenerator: {fileID: 6401711350891021566}
---- !u!114 &6280003255496109276
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 262323032200712418}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30d2bef6f0881a94188b565ce534a7a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6256600361791663417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189,6 +177,18 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3339466784559568760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262323032200712418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba9258257a7af04492fa5f3096332c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &330230703183629507
 GameObject:
   m_ObjectHideFlags: 0
@@ -1666,7 +1666,7 @@ Transform:
   m_GameObject: {fileID: 5261114695232924892}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -0, y: 0.5, z: 0}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1825,7 +1825,7 @@ Transform:
   m_GameObject: {fileID: 6262639573550878947}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.881, z: 1.55}
+  m_LocalPosition: {x: 0, y: 1.301, z: 1.55}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2684,20 +2684,35 @@ PrefabInstance:
       propertyPath: m_Name
       value: ColorArea
       objectReference: {fileID: 0}
+    - target: {fileID: 5538599490050823412, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5538599490050823412, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5538599490050823412, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7697129196598884383, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7697129196598884383, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7697129196598884383, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7697129196598884383, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
         type: 3}

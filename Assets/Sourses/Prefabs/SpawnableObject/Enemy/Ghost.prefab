@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 7957697814303847753}
   - component: {fileID: 2030034945819479098}
   - component: {fileID: 47814472312554096}
-  - component: {fileID: 2234611281821893908}
   - component: {fileID: -6027746358463426707}
   - component: {fileID: -8173986624936410962}
+  - component: {fileID: 7762032887121190022}
   m_Layer: 0
   m_Name: Ghost
   m_TagString: Untagged
@@ -108,19 +108,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2234611281821893908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7013142882000349681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35f95453f1e58734cb2051b40e1ac8c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colorGenerator: {fileID: 0}
 --- !u!136 &-6027746358463426707
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -171,3 +158,16 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &7762032887121190022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7013142882000349681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 460741eb11a6be54c9c85e6043002b7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colorGenerator: {fileID: 0}

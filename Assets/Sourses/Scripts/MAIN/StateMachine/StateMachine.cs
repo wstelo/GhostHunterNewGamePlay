@@ -34,4 +34,9 @@ public class StateMachine
             _currentState.Enter();
         }
     }
+
+    public void Reset()
+    {
+        _states.Clear();
+    }
 }

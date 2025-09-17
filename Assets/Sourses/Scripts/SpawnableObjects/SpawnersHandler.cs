@@ -22,7 +22,7 @@ public class SpawnersHandler
     public SpawnersHandler(ConfigsRepository configRepository)
     {
         _spawnableObjectFactory = new SpawnableObjectFactory();
-        _elementConfigs = configRepository.ConfigList;
+        _elementConfigs = configRepository.ElementConfigs;
 
         SetParameters(configRepository.EnemyConfigs, configRepository.DefenderConfigs.First(), configRepository.ProjectileConfigs);
     }

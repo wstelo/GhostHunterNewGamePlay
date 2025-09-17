@@ -1,5 +1,6 @@
 using System.Linq;
 using Reflex.Attributes;
+using UnityEditor;
 using UnityEngine;
 
 public class UnitPlatform : MonoBehaviour
@@ -86,5 +87,13 @@ public class UnitPlatform : MonoBehaviour
     private void RefreshCountPanel(int count)
     {
         _countText.Init(count, CurrentDefender.Colors.First());                                                    ////////////////////////////////////////////////
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Color color = new Color(1,0,1,0.2f);
+
+        Gizmos.color = color;
+        Gizmos.DrawSphere(transform.position, GameStaticData.UnitPlatformRadius);
     }
 }

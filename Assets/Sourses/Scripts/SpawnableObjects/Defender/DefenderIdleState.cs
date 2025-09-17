@@ -5,10 +5,10 @@ using UnityEngine;
 public class DefenderIdleState : State
 {
     private DefenderAnimatorController _animatorController;
-    private DefenderAreaDetector _detector;
+    private DefenceAreaDetector _detector;
     private List<ElementTypes> _currentElement;
 
-    public DefenderIdleState(StateMachine stateMachine, DefenderAnimatorController animator, DefenderAreaDetector detector, List<ElementTypes> currentElement) : base(stateMachine)
+    public DefenderIdleState(StateMachine stateMachine, DefenderAnimatorController animator, DefenceAreaDetector detector, List<ElementTypes> currentElement) : base(stateMachine)
     {
         _animatorController = animator;
         _detector = detector;
@@ -24,7 +24,7 @@ public class DefenderIdleState : State
     {
         if (_detector.GetNearbyEnemy(_currentElement) != null)                /////////////////////////////////////////////////////
         {
-            StateMachine.SetState<DefenderAttackState>();
+            StateMachine.SetState<TestAttackState>();
         }
     }
 

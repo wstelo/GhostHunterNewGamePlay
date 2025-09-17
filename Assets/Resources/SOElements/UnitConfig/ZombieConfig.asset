@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ZombieConfig
   m_EditorClassIdentifier: 
   _enemyType: 1
-  _prefab: {fileID: 1656653168093438469, guid: 0da3b36f1e23e4046932a7f193c01f41, type: 3}
+  _prefab: {fileID: 639601674116717232, guid: 0da3b36f1e23e4046932a7f193c01f41, type: 3}
   _hitEffect: {fileID: 0}

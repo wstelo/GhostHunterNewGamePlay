@@ -2,9 +2,9 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
-public class NearestPointOnSplineCalculator
+public static class NearestPointOnSplineCalculatorExtension
 {
-    public float GetNearestPointOnPercent(SplineContainer splineContainer, Transform point)
+    public static float GetNearestPointOnPercent(SplineContainer splineContainer, Transform point)
     {
         if (splineContainer == null || point == null)
             return default;
