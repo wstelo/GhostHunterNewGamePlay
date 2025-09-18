@@ -37,6 +37,7 @@ public class StateMachine
 
     public void Reset()
     {
+        _currentState?.Exit();
         _states.Clear();
     }
 }

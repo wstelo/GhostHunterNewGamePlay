@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -22,22 +23,25 @@ public class EnemyMover
         _movement = new SplineMovement(_splineContainer, _speed, _currentTransform);
     }
 
-    public async UniTaskVoid SetNewMovementBehavior(Grave target)                          //////////////////// 2 Ðàçà âûçûâàåòñÿ                     ÎÁÐÀÁÎÒÀÒÜ ÎØÈÁÊÓ
+    public async UniTaskVoid SetNewMovementBehavior(Grave target, CancellationToken token)                          //////////////////// 2 Ðàçà âûçûâàåòñÿ                     ÎÁÐÀÁÎÒÀÒÜ ÎØÈÁÊÓ
     {
-        try
+        float requiredPercentOnSpline = NearestPointOnSplineCalculatorExtension.GetNearestPointOnPercent(_splineContainer, target.transform);
+        Vector3 nearestPositionOnSpline = _splineContainer.Spline.EvaluatePosition(requiredPercentOnSpline);
+
+        await UniTask.WaitUntil(() => _currentTransform.position.IsEnoughClose(nearestPositionOnSpline, _minDistanceToSplinePoint), cancellationToken: token);
+
+        if(token.IsCancellationRequested)
         {
-            float requiredPercentOnSpline = NearestPointOnSplineCalculatorExtension.GetNearestPointOnPercent(_splineContainer, target.transform);
-            Vector3 nearestPositionOnSpline = _splineContainer.Spline.EvaluatePosition(requiredPercentOnSpline);
-
-            await UniTask.WaitUntil(() => _currentTransform.position.IsEnoughClose(nearestPositionOnSpline, _minDistanceToSplinePoint));
-
-            _movement = new MovementToGrave(target.transform, _currentTransform, _speed);
-
-            await UniTask.WaitUntil(() => _currentTransform.position.IsEnoughClose(target.transform.position, _minDistanceToSplinePoint));
+            return;
         }
-        catch
+
+        _movement = new MovementToGrave(target.transform, _currentTransform, _speed);
+
+        await UniTask.WaitUntil(() => _currentTransform.position.IsEnoughClose(target.transform.position, _minDistanceToSplinePoint), cancellationToken: token);
+
+        if (token.IsCancellationRequested)
         {
-            throw new NullReferenceException(nameof(target));
+            return;
         }
 
         TargetAchieved?.Invoke();

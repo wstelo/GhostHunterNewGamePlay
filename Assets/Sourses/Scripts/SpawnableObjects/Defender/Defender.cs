@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 [RequireComponent(typeof(DefenceAreaDetector))]
@@ -17,7 +18,7 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
 
     public event Action<Defender> Disabled;
 
-    public IRechargable ProjectileContainer;                                  ///////////////////////////// ???????????????? под интерфейсом мейби?  ЗАЧЕМ ??????????????????
+    public IRechargeable ProjectileContainer;                                  ///////////////////////////// ???????????????? под интерфейсом мейби?  ЗАЧЕМ ??????????????????
     public DefenderAttackTypes AttackType { get; private set; }         /////////////////// nahui?
     public ProjectileTypes ProjectileType { get; private set; }                           ///////////////////////////////////////     DATA HOLDER REQUIRED
     public DefenderTypes DefenderType { get; private set; }                //////////////////////// nahui?
@@ -48,7 +49,13 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         Colors = color;
         _colorGenerator.Init(Colors);
 
-        _defenceAreaDetector.Clear();
+        _defenderAnimatorController.StartIdleAnimation();
+        SetStatesWithDelay().Forget();
+    }
+
+    private async UniTaskVoid SetStatesWithDelay()
+    {
+        await UniTask.Delay(TimeSpan.FromSeconds(0.6f));
 
         _stateMachine.AddState(new TestAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
         _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementTypes));          /////////////// Инициализация стейтов?
@@ -58,7 +65,6 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     public void Disable()
     {
         _stateMachine.Reset();
-        _defenceAreaDetector.Clear();
         ProjectileContainer.Clear();
         Disabled?.Invoke(this);
     }

@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class DefenderAttackState : State
 {
-    private IRechargable _projectileContainer;
+    private IRechargeable _projectileContainer;
     private DefenderAnimatorController _animatorController;
     private DefenceAreaDetector _detector;
     private SpawnersHandler _spawnerHandler;
@@ -17,7 +17,7 @@ public class DefenderAttackState : State
     private Vector3 _spawnPosition;
 
     private UniTask _currentTask;
-    private IDamageable _currentTarget;
+    private Enemy _currentTarget;
 
     public DefenderAttackState(
         StateMachine stateMachine, 
@@ -28,7 +28,7 @@ public class DefenderAttackState : State
         List<ElementTypes> elementType,
         Vector3 spawnPosition,
         DefenderAnimatorController animatorController,
-        IRechargable projectileContainer) : base(stateMachine)
+        IRechargeable projectileContainer) : base(stateMachine)
     {
         _detector = detector;
         _spawnerHandler = spawnerHandler;
@@ -66,7 +66,7 @@ public class DefenderAttackState : State
 
         _animatorController.StartAttackAnimation(requiredSpeed);
         _animatorController.ProjectileSpawnPointEnded += SpawnProjectile;
-        _animatorController.AttackAnimationEnded += DecreaseProjectile;
+       // _animatorController.AttackAnimationEnded += DecreaseProjectile;
 
         await UniTask.Delay(TimeSpan.FromSeconds(_attackTime));
     }
@@ -87,7 +87,7 @@ public class DefenderAttackState : State
 
     private void DecreaseProjectile()
     {
-        _animatorController.AttackAnimationEnded -= DecreaseProjectile;
+        //_animatorController.AttackAnimationEnded -= DecreaseProjectile;
         _projectileContainer.DecreaseCount();
     }
 }

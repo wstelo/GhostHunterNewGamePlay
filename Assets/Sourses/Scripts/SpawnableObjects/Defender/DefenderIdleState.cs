@@ -7,6 +7,7 @@ public class DefenderIdleState : State
     private DefenderAnimatorController _animatorController;
     private DefenceAreaDetector _detector;
     private List<ElementTypes> _currentElement;
+    private Enemy _currentTarget = null;
 
     public DefenderIdleState(StateMachine stateMachine, DefenderAnimatorController animator, DefenceAreaDetector detector, List<ElementTypes> currentElement) : base(stateMachine)
     {
@@ -22,7 +23,9 @@ public class DefenderIdleState : State
 
     public override void FixedUpdate()
     {
-        if (_detector.GetNearbyEnemy(_currentElement) != null)                /////////////////////////////////////////////////////
+        _currentTarget = _detector.GetNearbyEnemy(_currentElement);
+
+        if (_currentTarget != null && _currentTarget.IsMarked == false)                /////////////////////////////////////////////////////
         {
             StateMachine.SetState<TestAttackState>();
         }

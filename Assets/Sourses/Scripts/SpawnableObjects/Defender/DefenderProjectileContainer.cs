@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DefenderProjectileContainer : IRechargable
+public class DefenderProjectileContainer : IRechargeable
 {
     public int Count { get; private set; } = 0;
 

@@ -9,7 +9,7 @@ using System.Threading;
 
 public class TestAttackState : State
 {
-    private IRechargable _projectileContainer;
+    private IRechargeable _projectileContainer;
     private DefenderAnimatorController _animatorController;
     private DefenceAreaDetector _detector;
     private SpawnersHandler _spawnerHandler;
@@ -18,7 +18,9 @@ public class TestAttackState : State
     private List<ElementTypes> _currentElement;
     private Vector3 _spawnPosition;
 
-    private IDamageable _currentTarget;
+    private Enemy _currentTarget;
+
+    private CancellationTokenSource _source;
 
     public TestAttackState(
         StateMachine stateMachine,
@@ -29,7 +31,7 @@ public class TestAttackState : State
         List<ElementTypes> elementType,
         Vector3 spawnPosition,
         DefenderAnimatorController animatorController,
-        IRechargable projectileContainer) : base(stateMachine)
+        IRechargeable projectileContainer) : base(stateMachine)
     {
         _detector = detector;
         _spawnerHandler = spawnerHandler;
@@ -54,6 +56,20 @@ public class TestAttackState : State
         }
     }
 
+    public override void Exit()
+    {
+        if(_currentTarget != null)
+        {
+            _currentTarget.RemoveMarked();
+        }
+
+        _detector.Delete(_currentTarget);
+        _currentTarget = null;
+        _animatorController.StopAttackAnimation();
+        _source?.Cancel();
+        _animatorController.ProjectileSpawnPointEnded -= SpawnProjectile;
+    }
+
     private void Attack()
     {
         float defaultClipLength = _animatorController.GetAnimationLength(DefenderAnimationData.AttackClipName);
@@ -62,31 +78,37 @@ public class TestAttackState : State
 
         _animatorController.StartAttackAnimation(requiredSpeed);
         _animatorController.ProjectileSpawnPointEnded += SpawnProjectile;
-    }
-
-    private void SpawnProjectile()
-    {
-        _animatorController.ProjectileSpawnPointEnded -= SpawnProjectile;
-        Projectile currentProjectile = _spawnerHandler.SpawnProjectile(_projectileType, _currentElement.First(), _spawnPosition);           //////////////////////////////////////// Add multi Projectile?
-        
-        currentProjectile.SetTarget(_currentTarget);
-
-        Debug.Log(_currentTarget);
 
         if (_currentTarget.IsLastHealth)
         {
             _detector.Delete(_currentTarget);
         }
+    }
+
+    private void SpawnProjectile()
+    {
+        _currentTarget.Marked();
+        _animatorController.ProjectileSpawnPointEnded -= SpawnProjectile;
+        Projectile currentProjectile = _spawnerHandler.SpawnProjectile(_projectileType, _currentElement.First(), _spawnPosition);           //////////////////////////////////////// Add multi Projectile?
+        
+        currentProjectile.SetTarget(_currentTarget);
 
         _projectileContainer.DecreaseCount();
         _currentTarget = null;
 
-        ChangeStateToIdleWithDelay().Forget();
+        _source?.Cancel();
+        _source = new CancellationTokenSource();
+        ChangeStateToIdleWithDelay(_source.Token).Forget();
     }
 
-    private async UniTask ChangeStateToIdleWithDelay()
+    private async UniTask ChangeStateToIdleWithDelay(CancellationToken token)
     {
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime));
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime), cancellationToken: token);
+
+        if(token.IsCancellationRequested)
+        {
+            return;
+        }
 
         StateMachine.SetState<DefenderIdleState>();
     }

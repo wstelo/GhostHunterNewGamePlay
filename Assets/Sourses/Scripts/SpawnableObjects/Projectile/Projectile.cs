@@ -32,7 +32,7 @@ public class Projectile : MonoBehaviour, ISpawnableObject<Projectile>
         }
     }
     
-    public void SetTarget(IDamageable target)
+    public void SetTarget(Enemy target)
     {
         _mover.Init(target);
     }

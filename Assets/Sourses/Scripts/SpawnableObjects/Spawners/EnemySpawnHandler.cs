@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -22,27 +21,20 @@ public class EnemySpawnHandler
         _spawnerHandler = spawnerHandler;
         _splineContainer = splineContainer;
         _spawnPosition = GetSpawnPoint(_splineContainer);
-
         _spawnDelay = enemyDistance / moveSpeed;
 
         Spawn().Forget();
     }
 
+    public event Action <Enemy> Spawned;        /////////////////////
+
     private async UniTaskVoid Spawn()
     {
-        try
+        while (_currentEnemiesConfigIndex < _levelConfig.EnemiesLevelConfigs.Count)             /////////////////////////////////// TOKEN
         {
-            while (_currentEnemiesConfigIndex < _levelConfig.EnemiesLevelConfigs.Count)
-            {
-                CreateObject();
-                await UniTask.Delay(TimeSpan.FromSeconds(_spawnDelay));
-            }
+            CreateObject();
+            await UniTask.Delay(TimeSpan.FromSeconds(_spawnDelay));
         }
-        catch
-        {
-            throw new Exception("EnemySpawn");
-        }
-
     }
 
     private void CreateObject()
@@ -60,6 +52,8 @@ public class EnemySpawnHandler
                 _spawnedEnemyCount = 0;
                 _currentEnemiesConfigIndex++;
             }
+
+            Spawned?.Invoke(enemy);
         }
     }
 

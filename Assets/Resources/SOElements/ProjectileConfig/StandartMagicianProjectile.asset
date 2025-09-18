@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: StandartMagicianProjectile
   m_EditorClassIdentifier: 
   _projectileType: 0
-  _prefab: {fileID: 2036832828605001289, guid: 5027eb3ba13c48d469403299daa8806c, type: 3}
+  _prefab: {fileID: -3092493193896694451, guid: 0eaa731ce95fc4e4da2561ee3bebe289,
+    type: 3}

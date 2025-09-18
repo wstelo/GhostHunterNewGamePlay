@@ -3,13 +3,11 @@ using UnityEngine;
 
 public class DefenceAreaDetector : MonoBehaviour
 {
-    private List<IDamageable> _currentEnemies = new List<IDamageable>();
+    private List<Enemy> _currentEnemies = new List<Enemy>();
 
-
-    public IDamageable GetNearbyEnemy(List<ElementTypes> elementTypes)
+    public Enemy GetNearbyEnemy(List<ElementTypes> elementTypes)
     {
-        IDamageable nearbyEnemy = null;
-
+        Enemy nearbyEnemy = null;
 
         foreach (var enemy in _currentEnemies)
         {
@@ -40,28 +38,28 @@ public class DefenceAreaDetector : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
-{
-    if (other.TryGetComponent(out IDamageable enemy))
     {
-        _currentEnemies.Add(enemy);
+        if (other.TryGetComponent(out Enemy enemy))
+        {
+            _currentEnemies.Add(enemy);
+        }
     }
-}
 
-private void OnTriggerExit(Collider other)
-{
-    if (other.TryGetComponent(out IDamageable enemy))
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.TryGetComponent(out Enemy enemy))
+        {
+            _currentEnemies.Remove(enemy);
+        }
+    }
+
+    public void Delete(Enemy enemy)
     {
         _currentEnemies.Remove(enemy);
     }
-}
 
-public void Delete(IDamageable enemy)
-{
-    _currentEnemies.Remove(enemy);
-}
-
-public void Clear()
-{
-    _currentEnemies.Clear();
-}
+    public void Clear()
+    {
+        _currentEnemies.Clear();
+    }
 }

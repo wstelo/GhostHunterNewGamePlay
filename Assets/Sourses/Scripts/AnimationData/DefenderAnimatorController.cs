@@ -11,7 +11,6 @@ public class DefenderAnimatorController : MonoBehaviour
     private float _defaultAnimatorSpeed = 1;
 
     public event Action ProjectileSpawnPointEnded;
-    public event Action AttackAnimationEnded;
 
     public void StartIdleAnimation()
     {
@@ -29,6 +28,12 @@ public class DefenderAnimatorController : MonoBehaviour
         _animator.SetBool(DefenderAnimationData.IsAttack, true);
     }
 
+    public void StopAttackAnimation()
+    {
+        _animator.SetBool(DefenderAnimationData.IsAttack, false);
+        _animator.speed = _defaultAnimatorSpeed;
+    }
+
     public void CreateProjectile()
     {
         ProjectileSpawnPointEnded?.Invoke();
@@ -38,7 +43,6 @@ public class DefenderAnimatorController : MonoBehaviour
     {
         _animator.SetBool(DefenderAnimationData.IsAttack, false);
         _animator.speed = _defaultAnimatorSpeed;
-        AttackAnimationEnded?.Invoke();
     }
 
     public float GetAnimationLength(string animationName)
