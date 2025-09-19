@@ -10,7 +10,7 @@ public class UnitPlatform : MonoBehaviour
 
     private MultiProjectileCell _currentCell;
 
-    [Inject] private SpawnersHandler _spawnersHandler;
+    private DefenderSpawnHandler _spawnersHandler;
 
     public Defender CurrentDefender { get; private set; }
 
@@ -18,6 +18,11 @@ public class UnitPlatform : MonoBehaviour
     {
         _countText.ResetCount();
         _cellDataHolder.CellChanged += Occupy;
+    }
+
+    public void Initialize(DefenderSpawnHandler spawnerHandler)
+    {
+        _spawnersHandler = spawnerHandler;
     }
 
     private void Occupy(MultiProjectileCell cell)
@@ -63,7 +68,7 @@ public class UnitPlatform : MonoBehaviour
 
         if (isChanged)
         {
-            CurrentDefender = SpawnDefender(_currentCell);
+            CurrentDefender = _spawnersHandler.SpawnDefender(_currentCell, transform.position);
             CurrentDefender.Disabled += Clear;
             CurrentDefender.ProjectileContainer.CountChanged += RefreshCountPanel;
             RefreshCountPanel(CurrentDefender.ProjectileContainer.Count);
@@ -77,11 +82,6 @@ public class UnitPlatform : MonoBehaviour
         CurrentDefender.ProjectileContainer.CountChanged -= RefreshCountPanel;
         CurrentDefender.Disabled -= Clear;
         CurrentDefender = null;
-    }
-
-    private Defender SpawnDefender(MultiProjectileCell cell)
-    {
-        return _spawnersHandler.SpawnDefender(DefenderTypes.Magician, cell.ElementTypes, transform.position, cell.Count);                 /////////////////////////////////////////////////////////  DEFENDERTYPE
     }
 
     private void RefreshCountPanel(int count)

@@ -6,7 +6,7 @@ public class EnemyCollector
 {
     private EnemySpawnHandler _spawnHandler;
 
-    private List<Enemy> _enemies;
+    private List<Enemy> _enemies = new List<Enemy>();
 
     public EnemyCollector(EnemySpawnHandler spawnHandler)
     {
@@ -19,13 +19,23 @@ public class EnemyCollector
     {
         if (_enemies.Contains(enemy))
         {
+            if (enemy.IsLastHealth)
+            {
+                _enemies.Remove(enemy);
+            }
+
             return enemy;
         }
 
         return null;
     }
 
-    private void AddEnemy(Enemy enemy)
+    public void ReturnTarget(Enemy enemy)
+    {
+        _enemies.Add(enemy);
+    }
+
+    public void AddEnemy(Enemy enemy)
     {
         _enemies.Add(enemy);
     }

@@ -42,6 +42,7 @@ public class DefenceAreaDetector : MonoBehaviour
         if (other.TryGetComponent(out Enemy enemy))
         {
             _currentEnemies.Add(enemy);
+            enemy.Disabled += Delete;
         }
     }
 
@@ -56,10 +57,6 @@ public class DefenceAreaDetector : MonoBehaviour
     public void Delete(Enemy enemy)
     {
         _currentEnemies.Remove(enemy);
-    }
-
-    public void Clear()
-    {
-        _currentEnemies.Clear();
+        enemy.Disabled -= Delete;
     }
 }

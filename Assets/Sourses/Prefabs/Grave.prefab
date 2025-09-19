@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9093409138327368834}
   - component: {fileID: 9093409138330793122}
   - component: {fileID: 9093409138329663074}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: coffin_lid_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 9093409138327368836}
   - component: {fileID: 9093409138330793124}
   - component: {fileID: 9093409138329663076}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: coffin_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -179,7 +179,7 @@ GameObject:
   - component: {fileID: 9093409138336979810}
   - component: {fileID: 703265579462010006}
   - component: {fileID: 3775254490116463436}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Grave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,8 +236,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4763bece86429434296f425cad5e76f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  elementTypes: 
   _colorGenerator: {fileID: 6693513942720086411}
+  _elementTypes: 
+  _isSettedElements: 0
 --- !u!135 &3775254490116463436
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -271,6 +272,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ColorArea
+      objectReference: {fileID: 0}
+    - target: {fileID: 2624976749120154549, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2684248803001928231, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5538599490050823412, guid: bac6e1ebbf9a6e140b5d62bb7cfdbb11,
         type: 3}

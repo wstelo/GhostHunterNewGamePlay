@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEngine;
 using System.Threading;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
 
 public class TestAttackState : State
 {
@@ -17,10 +15,13 @@ public class TestAttackState : State
     private ProjectileTypes _projectileType;
     private List<ElementTypes> _currentElement;
     private Vector3 _spawnPosition;
+    private EnemyCollector _enemyCollector;
 
     private Enemy _currentTarget;
 
     private CancellationTokenSource _source;
+
+    private bool _isPerformedAttack = false;
 
     public TestAttackState(
         StateMachine stateMachine,
@@ -31,7 +32,8 @@ public class TestAttackState : State
         List<ElementTypes> elementType,
         Vector3 spawnPosition,
         DefenderAnimatorController animatorController,
-        IRechargeable projectileContainer) : base(stateMachine)
+        IRechargeable projectileContainer,
+        EnemyCollector enemyCollector) : base(stateMachine)
     {
         _detector = detector;
         _spawnerHandler = spawnerHandler;
@@ -41,72 +43,64 @@ public class TestAttackState : State
         _spawnPosition = spawnPosition;
         _animatorController = animatorController;
         _projectileContainer = projectileContainer;
+        _enemyCollector = enemyCollector;
     }
 
     public override void Enter()
     {
-        if(_currentTarget == null)
+        if (_currentTarget == null)
         {
             _currentTarget = _detector.GetNearbyEnemy(_currentElement);
         }
 
-        if(_currentTarget != null )
+        if (_currentTarget != null)
         {
-            Attack();
+            _source?.Cancel();
+            _source = new CancellationTokenSource();
+            Attack(_source.Token).Forget();
         }
     }
 
     public override void Exit()
     {
-        if(_currentTarget != null)
-        {
-            _currentTarget.RemoveMarked();
-        }
-
-        _detector.Delete(_currentTarget);
         _currentTarget = null;
         _animatorController.StopAttackAnimation();
-        _source?.Cancel();
-        _animatorController.ProjectileSpawnPointEnded -= SpawnProjectile;
+        _source?.Cancel();     
     }
 
-    private void Attack()
+    private async UniTaskVoid Attack(CancellationToken token)
     {
         float defaultClipLength = _animatorController.GetAnimationLength(DefenderAnimationData.AttackClipName);
 
         float requiredSpeed = defaultClipLength / _attackTime;
 
         _animatorController.StartAttackAnimation(requiredSpeed);
-        _animatorController.ProjectileSpawnPointEnded += SpawnProjectile;
 
-        if (_currentTarget.IsLastHealth)
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * 0.7), cancellationToken: token);
+
+        if (token.IsCancellationRequested)
         {
-            _detector.Delete(_currentTarget);
+            Exit();
+            return;
         }
-    }
 
-    private void SpawnProjectile()
-    {
-        _currentTarget.Marked();
-        _animatorController.ProjectileSpawnPointEnded -= SpawnProjectile;
+        if (_enemyCollector.TryGetTarget(_currentTarget) == false)
+        {
+            StateMachine.SetState<DefenderIdleState>();
+
+            return;
+        }
+
         Projectile currentProjectile = _spawnerHandler.SpawnProjectile(_projectileType, _currentElement.First(), _spawnPosition);           //////////////////////////////////////// Add multi Projectile?
-        
         currentProjectile.SetTarget(_currentTarget);
 
-        _projectileContainer.DecreaseCount();
-        _currentTarget = null;
+        _isPerformedAttack = true;
 
-        _source?.Cancel();
-        _source = new CancellationTokenSource();
-        ChangeStateToIdleWithDelay(_source.Token).Forget();
-    }
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * 0.3), cancellationToken: token);
 
-    private async UniTask ChangeStateToIdleWithDelay(CancellationToken token)
-    {
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime), cancellationToken: token);
-
-        if(token.IsCancellationRequested)
+        if (token.IsCancellationRequested)
         {
+            Exit();
             return;
         }
 

@@ -32,8 +32,8 @@ public class EnemySpawnHandler
     {
         while (_currentEnemiesConfigIndex < _levelConfig.EnemiesLevelConfigs.Count)             /////////////////////////////////// TOKEN
         {
-            CreateObject();
             await UniTask.Delay(TimeSpan.FromSeconds(_spawnDelay));
+            CreateObject();         
         }
     }
 

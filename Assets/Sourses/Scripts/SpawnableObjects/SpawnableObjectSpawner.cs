@@ -52,6 +52,7 @@ public class SpawnableObjectSpawner<T> where T : MonoBehaviour, ISpawnableObject
     private void ReleasedObject(T item)
     {
         item.Disabled -= ReleasedObject;
+        item.transform.position = Vector3.zero;
         _pool.Release(item);
     }
 

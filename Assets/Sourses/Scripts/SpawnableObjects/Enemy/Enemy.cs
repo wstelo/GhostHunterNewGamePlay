@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Cysharp.Threading.Tasks;
 using UniRx;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines;
 using UnityEngine.Timeline;
@@ -22,7 +24,7 @@ public abstract class Enemy : MonoBehaviour, ISpawnableObject<Enemy>
     public event Action<Enemy> Disabled;
 
     public List<ElementTypes> ElementTypes { get; private set; }              /////////////////////////// ENEMYTYPE править
-    public bool IsLastHealth => _health.Count.Value == 1;                          ////////////////////////////////////////////////////////////// Корректное свойство?
+    public bool IsLastHealth => _health.Count.Value <= 1;                          ////////////////////////////////////////////////////////////// Корректное свойство?
     public Transform Transform => transform;                       ///////////////////////////////////// ???????????????????????
 
     public bool IsMarked = false;
@@ -51,6 +53,11 @@ public abstract class Enemy : MonoBehaviour, ISpawnableObject<Enemy>
             .AddTo(this);                              /////////////////////// Forget?                        ///////////// Disposable 
     }
 
+    private void OnDisable()
+    {
+        _source?.Cancel();
+    }
+
     public void Marked()
     {
         IsMarked = true;
@@ -59,11 +66,6 @@ public abstract class Enemy : MonoBehaviour, ISpawnableObject<Enemy>
     public void RemoveMarked()
     {
         IsMarked = false;
-    }
-
-    private void OnDisable()
-    {
-        _source?.Cancel();
     }
 
     private void Update()

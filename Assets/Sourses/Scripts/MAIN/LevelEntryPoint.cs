@@ -13,13 +13,14 @@ public class LevelEntryPoint : MonoBehaviour
     [SerializeField] private SplineContainer _splineContainer;
     [SerializeField] private TextAsset _jsonLevelConfig;
     [SerializeField] private GraveTypeHandler _graveTypeHandler;
+    [SerializeField] private UnitPlatformHandler _unitPlatformHandler;
 
     private float _distanceBetweenEnemies = GameStaticData.DistanceBetweenEnemies;                                   ////////////////////////////////////////////////
-
     private EnemySpawnHandler _enemySpawnHandler;
-
     private CellHandler _cellHandler;
     private UnitViewHandler _unitViewHandler;
+    private EnemyCollector _enemyCollector;
+    private DefenderSpawnHandler _defenderSpawnHandler;
 
     private List<ElementTypes> _elementTypesOnLevel;
     private LevelConfig _levelConfig;
@@ -37,7 +38,11 @@ public class LevelEntryPoint : MonoBehaviour
         _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler);
         
         _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _splineContainer, _distanceBetweenEnemies, _levelConfig.LevelSpeed);
+        _enemyCollector = new EnemyCollector(_enemySpawnHandler);
 
+        _defenderSpawnHandler = new DefenderSpawnHandler(_unitSpawnerHandler, _defenderConfig, _enemyCollector);
+
+        _unitPlatformHandler.Initialize(_defenderSpawnHandler);
         _graveTypeHandler.Init(_levelConfig);
     }
 
