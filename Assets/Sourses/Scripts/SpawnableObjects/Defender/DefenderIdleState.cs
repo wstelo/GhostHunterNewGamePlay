@@ -24,11 +24,9 @@ public class DefenderIdleState : State
     public override void FixedUpdate()
     {
         _currentTarget = _detector.GetNearbyEnemy(_currentElement);
-        Debug.Log(_currentTarget);
 
         if (_currentTarget != null && _currentTarget.IsMarked == false)                /////////////////////////////////////////////////////
         {
-            Debug.Log("Bum");
             StateMachine.SetState<TestAttackState>();
         }
     }

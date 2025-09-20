@@ -15,13 +15,15 @@ public class TestAttackState : State
     private ProjectileTypes _projectileType;
     private List<ElementTypes> _currentElement;
     private Vector3 _spawnPosition;
-    private EnemyCollector _enemyCollector;
 
     private Enemy _currentTarget;
 
     private CancellationTokenSource _source;
 
     private bool _isPerformedAttack = false;
+
+
+    private Defender _denfender;
 
     public TestAttackState(
         StateMachine stateMachine,
@@ -33,7 +35,7 @@ public class TestAttackState : State
         Vector3 spawnPosition,
         DefenderAnimatorController animatorController,
         IRechargeable projectileContainer,
-        EnemyCollector enemyCollector) : base(stateMachine)
+        Defender denfender) : base(stateMachine)
     {
         _detector = detector;
         _spawnerHandler = spawnerHandler;
@@ -43,7 +45,7 @@ public class TestAttackState : State
         _spawnPosition = spawnPosition;
         _animatorController = animatorController;
         _projectileContainer = projectileContainer;
-        _enemyCollector = enemyCollector;
+        _denfender = denfender;
     }
 
     public override void Enter()
@@ -53,41 +55,65 @@ public class TestAttackState : State
             _currentTarget = _detector.GetNearbyEnemy(_currentElement);
         }
 
-        if (_currentTarget != null)
+        if (_currentTarget != null && _currentTarget.IsMarked == false)
         {
             _source?.Cancel();
             _source = new CancellationTokenSource();
             Attack(_source.Token).Forget();
         }
+        else
+        {
+            StateMachine.SetState<DefenderIdleState>();
+        }
     }
 
     public override void Exit()
     {
+        if (_isPerformedAttack == false)
+        {
+            _currentTarget?.RemoveMarked();
+        }
+
         _currentTarget = null;
         _animatorController.StopAttackAnimation();
-        _source?.Cancel();     
+        _source?.Cancel();
+
+        _isPerformedAttack = false;
+
+        _denfender.SetImage(Color.green);
     }
 
     private async UniTaskVoid Attack(CancellationToken token)
     {
+        if (_currentTarget.IsLastHealth)
+        {
+            if (_currentTarget.TryMarked(this))
+            {
+                _denfender.SetImage(Color.red);
+            }
+            else
+            {
+                StateMachine.SetState<DefenderIdleState>();
+                return;
+            }             
+        }
+
         float defaultClipLength = _animatorController.GetAnimationLength(DefenderAnimationData.AttackClipName);
 
         float requiredSpeed = defaultClipLength / _attackTime;
 
         _animatorController.StartAttackAnimation(requiredSpeed);
 
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * 0.7), cancellationToken: token);
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * 0.7), cancellationToken: token);                                      ////////////////////////////////                    Создать класс с определением attackTime множителя
 
         if (token.IsCancellationRequested)
         {
-            Exit();
             return;
         }
-
-        if (_enemyCollector.TryGetTarget(_currentTarget) == false)
+        
+        if (_currentTarget.CurrentState != this && _currentTarget.IsMarked == true)
         {
             StateMachine.SetState<DefenderIdleState>();
-
             return;
         }
 
@@ -100,10 +126,10 @@ public class TestAttackState : State
 
         if (token.IsCancellationRequested)
         {
-            Exit();
             return;
         }
 
+        _projectileContainer.DecreaseCount();
         StateMachine.SetState<DefenderIdleState>();
     }
 }

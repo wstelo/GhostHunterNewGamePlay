@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using UniRx;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(DefenceAreaDetector))]
 public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
@@ -11,8 +13,7 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     [SerializeField] private Transform _projectileSpawnPoint;
     [SerializeField] private DefenceAreaDetector _defenceAreaDetector;
     [SerializeField] private MultiColorAreaGenerator _colorGenerator;
-
-    private EnemyCollector _enemyCollector;
+    [SerializeField] private Image _image;
 
     private StateMachine _stateMachine;
     private SpawnersHandler _spawnerHandler;
@@ -24,6 +25,10 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     public ProjectileTypes ProjectileType { get; private set; }                           ///////////////////////////////////////     DATA HOLDER REQUIRED
     public List<ElementTypes> ElementTypes { get; private set; }
     public List<Color> Colors { get; private set; }                         //////////////           nahui?
+
+    private ReactiveProperty<(Enemy, Transform)> _currentTarget = new ReactiveProperty<(Enemy, Transform)>();
+
+    public IReadOnlyReactiveProperty<(Enemy, Transform)> CurrentTarget => _currentTarget;
 
     private void Awake()
     {
@@ -38,10 +43,10 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         _stateMachine.FixedUpdate();
     }
 
-    public void SetEnemyCollector(EnemyCollector enemyCollector)
+
+    public void SetImage(Color color)
     {
-        _enemyCollector = enemyCollector;
-        SetStatesWithDelay().Forget();              //////////////////////////////////////////////////////
+        _image.color = color;
     }
 
     public void Init(List<ElementTypes> types, List<Color> color, SpawnersHandler spawnerHandler, int projectileCount, DefenderConfig config)
@@ -55,13 +60,14 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
 
         _defenderAnimatorController.StartIdleAnimation();
 
+        SetStatesWithDelay().Forget();
     }
 
     private async UniTaskVoid SetStatesWithDelay()
     {
         await UniTask.Delay(TimeSpan.FromSeconds(0.6f));  /////////////////////////////////////////////////////// Token
 
-        _stateMachine.AddState(new TestAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer, _enemyCollector));
+        _stateMachine.AddState(new TestAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer, this));
         _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementTypes));          /////////////// Инициализация стейтов?
         _stateMachine.SetState<DefenderIdleState>();
     }

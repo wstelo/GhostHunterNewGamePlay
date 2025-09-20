@@ -19,7 +19,6 @@ public class LevelEntryPoint : MonoBehaviour
     private EnemySpawnHandler _enemySpawnHandler;
     private CellHandler _cellHandler;
     private UnitViewHandler _unitViewHandler;
-    private EnemyCollector _enemyCollector;
     private DefenderSpawnHandler _defenderSpawnHandler;
 
     private List<ElementTypes> _elementTypesOnLevel;
@@ -38,9 +37,8 @@ public class LevelEntryPoint : MonoBehaviour
         _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler);
         
         _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _splineContainer, _distanceBetweenEnemies, _levelConfig.LevelSpeed);
-        _enemyCollector = new EnemyCollector(_enemySpawnHandler);
 
-        _defenderSpawnHandler = new DefenderSpawnHandler(_unitSpawnerHandler, _defenderConfig, _enemyCollector);
+        _defenderSpawnHandler = new DefenderSpawnHandler(_unitSpawnerHandler, _defenderConfig);
 
         _unitPlatformHandler.Initialize(_defenderSpawnHandler);
         _graveTypeHandler.Init(_levelConfig);

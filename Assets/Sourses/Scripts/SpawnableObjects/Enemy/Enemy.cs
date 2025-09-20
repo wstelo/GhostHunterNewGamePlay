@@ -27,7 +27,8 @@ public abstract class Enemy : MonoBehaviour, ISpawnableObject<Enemy>
     public bool IsLastHealth => _health.Count.Value <= 1;                          ////////////////////////////////////////////////////////////// Корректное свойство?
     public Transform Transform => transform;                       ///////////////////////////////////// ???????????????????????
 
-    public bool IsMarked = false;
+    public bool IsMarked { get; private set; } = false;
+    public TestAttackState CurrentState { get; private set; }
 
     private void Awake()
     {
@@ -58,14 +59,20 @@ public abstract class Enemy : MonoBehaviour, ISpawnableObject<Enemy>
         _source?.Cancel();
     }
 
-    public void Marked()
+    public bool TryMarked(TestAttackState _defender)
     {
+        if(IsMarked) return false;
+
         IsMarked = true;
+        CurrentState = _defender;
+
+        return true;
     }
 
     public void RemoveMarked()
     {
         IsMarked = false;
+        CurrentState = null;
     }
 
     private void Update()
