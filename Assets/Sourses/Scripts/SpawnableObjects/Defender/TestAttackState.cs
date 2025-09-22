@@ -22,9 +22,6 @@ public class TestAttackState : State
 
     private bool _isPerformedAttack = false;
 
-
-    private Defender _denfender;
-
     public TestAttackState(
         StateMachine stateMachine,
         DefenceAreaDetector detector,
@@ -34,8 +31,8 @@ public class TestAttackState : State
         List<ElementTypes> elementType,
         Vector3 spawnPosition,
         DefenderAnimatorController animatorController,
-        IRechargeable projectileContainer,
-        Defender denfender) : base(stateMachine)
+        IRechargeable projectileContainer
+        ) : base(stateMachine)
     {
         _detector = detector;
         _spawnerHandler = spawnerHandler;
@@ -45,7 +42,6 @@ public class TestAttackState : State
         _spawnPosition = spawnPosition;
         _animatorController = animatorController;
         _projectileContainer = projectileContainer;
-        _denfender = denfender;
     }
 
     public override void Enter()
@@ -70,8 +66,8 @@ public class TestAttackState : State
     public override void Exit()
     {
         if (_isPerformedAttack == false)
-        {
-            _currentTarget?.RemoveMarked();
+        {         
+            _currentTarget?.RemoveMarked(this);
         }
 
         _currentTarget = null;
@@ -79,23 +75,17 @@ public class TestAttackState : State
         _source?.Cancel();
 
         _isPerformedAttack = false;
-
-        _denfender.SetImage(Color.green);
     }
 
     private async UniTaskVoid Attack(CancellationToken token)
     {
         if (_currentTarget.IsLastHealth)
         {
-            if (_currentTarget.TryMarked(this))
-            {
-                _denfender.SetImage(Color.red);
-            }
-            else
+            if (_currentTarget.TryMarked(this) == false)
             {
                 StateMachine.SetState<DefenderIdleState>();
                 return;
-            }             
+            }           
         }
 
         float defaultClipLength = _animatorController.GetAnimationLength(DefenderAnimationData.AttackClipName);
@@ -113,6 +103,7 @@ public class TestAttackState : State
         
         if (_currentTarget.CurrentState != this && _currentTarget.IsMarked == true)
         {
+            _detector.Delete(_currentTarget);
             StateMachine.SetState<DefenderIdleState>();
             return;
         }

@@ -5,6 +5,8 @@ using Reflex;
 using System.ComponentModel;
 using Reflex.Attributes;
 using Reflex.Injectors;
+using UnityEngine.SceneManagement;
+using Reflex.Extensions;
 
 public class SpawnableObjectFactory
 {   

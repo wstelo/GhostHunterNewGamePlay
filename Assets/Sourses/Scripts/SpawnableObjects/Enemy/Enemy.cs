@@ -59,20 +59,23 @@ public abstract class Enemy : MonoBehaviour, ISpawnableObject<Enemy>
         _source?.Cancel();
     }
 
-    public bool TryMarked(TestAttackState _defender)
+    public bool TryMarked(TestAttackState defender)
     {
         if(IsMarked) return false;
 
         IsMarked = true;
-        CurrentState = _defender;
+        CurrentState = defender;
 
         return true;
     }
 
-    public void RemoveMarked()
+    public void RemoveMarked(TestAttackState defender)
     {
-        IsMarked = false;
-        CurrentState = null;
+        if(CurrentState == defender)
+        {
+            IsMarked = false;
+            CurrentState = null;
+        }      
     }
 
     private void Update()

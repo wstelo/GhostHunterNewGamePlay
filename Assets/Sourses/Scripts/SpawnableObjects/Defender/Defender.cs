@@ -13,11 +13,13 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     [SerializeField] private Transform _projectileSpawnPoint;
     [SerializeField] private DefenceAreaDetector _defenceAreaDetector;
     [SerializeField] private MultiColorAreaGenerator _colorGenerator;
-    [SerializeField] private Image _image;
+    [SerializeField] private AnimationEventReceiver _reciever;
 
     private StateMachine _stateMachine;
     private SpawnersHandler _spawnerHandler;
     private float _attackDelay = 2f;
+
+    public float TriggerTime {  get; private set; }
 
     public event Action<Defender> Disabled;
 
@@ -35,20 +37,20 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         ProjectileContainer = new DefenderProjectileContainer();
         ProjectileContainer.ProjectileEnded += Disable;                               ////////////////////////////////// OTPISKA
 
-        _stateMachine = new StateMachine();
+        _stateMachine = new StateMachine();      
+    }
+
+    public void SetParams(float value)
+    {
+        TriggerTime = value;
+        Debug.Log(TriggerTime);
     }
 
     private void FixedUpdate()
     {
         _stateMachine.FixedUpdate();
     }
-
-
-    public void SetImage(Color color)
-    {
-        _image.color = color;
-    }
-
+    
     public void Init(List<ElementTypes> types, List<Color> color, SpawnersHandler spawnerHandler, int projectileCount, DefenderConfig config)
     {
         ProjectileType = config.ProjectileTypes;
@@ -63,19 +65,19 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         SetStatesWithDelay().Forget();
     }
 
-    private async UniTaskVoid SetStatesWithDelay()
-    {
-        await UniTask.Delay(TimeSpan.FromSeconds(0.6f));  /////////////////////////////////////////////////////// Token
-
-        _stateMachine.AddState(new TestAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer, this));
-        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementTypes));          /////////////// Инициализация стейтов?
-        _stateMachine.SetState<DefenderIdleState>();
-    }
-
     public void Disable()
     {
         _stateMachine.Reset();
         ProjectileContainer.Clear();
         Disabled?.Invoke(this);
+    }
+
+    private async UniTaskVoid SetStatesWithDelay()
+    {
+        await UniTask.Delay(TimeSpan.FromSeconds(0.6f));  /////////////////////////////////////////////////////// Token
+
+        _stateMachine.AddState(new TestAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
+        _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementTypes));          /////////////// Инициализация стейтов?
+        _stateMachine.SetState<DefenderIdleState>();
     }
 }
