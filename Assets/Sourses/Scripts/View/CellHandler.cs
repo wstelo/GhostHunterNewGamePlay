@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class CellHandler
 {
@@ -8,10 +8,91 @@ public class CellHandler
     private List<ElementTypes> _levelTypes = new List<ElementTypes>();
     private EnemySpawnHandler _enemySpawnHandler;         ///////////////////
 
-    public CellHandler(List<ElementTypes> elementTypes, List<ElementConfig> elementConfigs)
+    private List<Enemy> _enemies = new List<Enemy>();
+    private int _projectileButtonCount = 0;
+
+    private static Random _random = new Random();
+
+    public CellHandler(List<ElementTypes> elementTypes, List<ElementConfig> elementConfigs, EnemySpawnHandler spawnHandler, int projectileButtonCount)
     {
         _levelTypes = elementTypes;
         _elementConfigs = elementConfigs;
+        _enemySpawnHandler = spawnHandler;
+
+        _enemySpawnHandler.Spawned += AddEnemy;
+        _projectileButtonCount = projectileButtonCount;
+    }
+
+    public List<ProjectileCell> GetRequiredProjectilesCellsTEST()
+    {
+        List<ProjectileCell> cells = new List<ProjectileCell>();
+
+        Enemy enemy = _enemies.FirstOrDefault(enemy => enemy is BossEnemy);
+
+        if (enemy != null)
+        {
+            cells = GetBossCells(enemy);
+
+            if(cells.Count < _projectileButtonCount)
+            {
+                int requiredCount = _projectileButtonCount - cells.Count;
+
+                for (int i = 0; i < requiredCount; i++)
+                {
+                    cells.Add(GetRandomProjectileCell());
+                }
+            }
+        }
+        else
+        {
+
+        }
+
+        return cells;
+    }
+
+    private List<ProjectileCell> GetSimpleCells()
+    {
+        List<ProjectileCell> cells = new List<ProjectileCell>();
+
+        Enemy firstEnemy = _enemies.First();
+
+        foreach (var enemy in _enemies)
+        {
+            if(firstEnemy.ElementTypes.ExactMatch(enemy.ElementTypes))
+            {
+                if(firstEnemy.ElementTypes.Count == 1)
+                {
+                   // cells.Add(new ProjectileCell())
+                }
+                
+            }
+        }
+
+        return null;
+    }
+
+    private List<ProjectileCell> GetBossCells(Enemy bossEnemy)
+    {
+        List<ProjectileCell> projectileCells = new List<ProjectileCell>();
+        List<ElementTypes> requiredElements = bossEnemy.ElementTypes;
+        ElementTypes elementTypes = bossEnemy.ElementTypes[_random.Next(bossEnemy.ElementTypes.Count)];
+
+        int requiredCount = bossEnemy.CurrentHealth;
+        List<int> cells = GenerateProjectileCount(requiredCount);
+
+        foreach (var cell in cells)
+        {
+            foreach (var elementData in _elementConfigs)
+            {
+                if(elementData.Type == elementTypes)
+                {
+                    projectileCells.Add(new ProjectileCell(elementData.Type, cell, elementData.Color));
+                }
+            }
+        }
+
+        return projectileCells;
     }
 
     public List<ProjectileCell> GetRequiredProjectileCells()
@@ -44,6 +125,39 @@ public class CellHandler
         }
 
         return projectileCells;
+    }
+
+    private void AddEnemy(Enemy enemy)
+    {
+        _enemies.Add(enemy);
+
+        enemy.Disabled += RemoveEnemy;
+    }
+
+    private void RemoveEnemy(Enemy enemy)
+    {
+        _enemies.Remove(enemy);
+        enemy.Disabled -= RemoveEnemy;
+    }
+
+    private List<ElementTypes> GetRepeatableElements(List<ElementTypes> elementTypes)
+    {
+        List<ElementTypes> repeatableElements = new List<ElementTypes>();
+
+        foreach (ElementTypes elementType in elementTypes)
+        {
+
+            if (elementTypes.First() == elementType)
+            {
+                repeatableElements.Add(elementType);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return repeatableElements;
     }
 
     public ProjectileCell GetRandomProjectileCell()
@@ -167,25 +281,5 @@ public class CellHandler
         }
 
         return currentCount;
-    }
-
-    private List<ElementTypes> GetRepeatableElements(List<ElementTypes> elementTypes)
-    {
-        List<ElementTypes> repeatableElements = new List<ElementTypes>();
-
-        foreach (ElementTypes elementType in elementTypes)
-        {
-
-            if (elementTypes.First() == elementType)
-            {
-                repeatableElements.Add(elementType);
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        return repeatableElements;
     }
 }

@@ -25,6 +25,7 @@ public abstract class Enemy : MonoBehaviour, ISpawnableObject<Enemy>
 
     public List<ElementTypes> ElementTypes { get; private set; }              /////////////////////////// ENEMYTYPE править
     public bool IsLastHealth => _health.Count.Value <= 1;                          ////////////////////////////////////////////////////////////// Корректное свойство?
+    public int CurrentHealth => _health.Count.Value;
     public Transform Transform => transform;                       ///////////////////////////////////// ???????????????????????
 
     public bool IsMarked { get; private set; } = false;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
@@ -9,6 +10,8 @@ public class ProjectileButton : MonoBehaviour
     [SerializeField] private ProjectileButtonView _textView;
 
     private ProjectileCell _cells;
+
+    public event Action Disabled;
 
     private void Awake()
     {
@@ -28,8 +31,9 @@ public class ProjectileButton : MonoBehaviour
     }
 
     public void Deactivate()            
-    {
+    {    
         gameObject.SetActive(false);
+        Disabled?.Invoke();
     }
 
     private void OnDestroy()

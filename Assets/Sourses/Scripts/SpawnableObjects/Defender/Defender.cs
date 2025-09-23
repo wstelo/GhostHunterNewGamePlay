@@ -19,7 +19,7 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     private SpawnersHandler _spawnerHandler;
     private float _attackDelay = 2f;
 
-    public float TriggerTime {  get; private set; }
+    private float _spawnProjectileTriggerTime = 0f;
 
     public event Action<Defender> Disabled;
 
@@ -37,13 +37,7 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
         ProjectileContainer = new DefenderProjectileContainer();
         ProjectileContainer.ProjectileEnded += Disable;                               ////////////////////////////////// OTPISKA
 
-        _stateMachine = new StateMachine();      
-    }
-
-    public void SetParams(float value)
-    {
-        TriggerTime = value;
-        Debug.Log(TriggerTime);
+        _stateMachine = new StateMachine();
     }
 
     private void FixedUpdate()
@@ -76,7 +70,11 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     {
         await UniTask.Delay(TimeSpan.FromSeconds(0.6f));  /////////////////////////////////////////////////////// Token
 
-        _stateMachine.AddState(new TestAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer));
+        _spawnProjectileTriggerTime = _reciever.GetAnimationTriggerTime("IsAttack");
+
+        Debug.Log(_spawnProjectileTriggerTime);
+
+        _stateMachine.AddState(new TestAttackState(_stateMachine, _defenceAreaDetector, _spawnerHandler, _attackDelay, ProjectileTypes.StandartMagicianProjectile, ElementTypes, _projectileSpawnPoint.position, _defenderAnimatorController, ProjectileContainer, _spawnProjectileTriggerTime));
         _stateMachine.AddState(new DefenderIdleState(_stateMachine, _defenderAnimatorController, _defenceAreaDetector, ElementTypes));          /////////////// Инициализация стейтов?
         _stateMachine.SetState<DefenderIdleState>();
     }

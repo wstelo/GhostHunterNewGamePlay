@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -20,7 +21,7 @@ public class EnemySpawnHandler
         _levelConfig = config;
         _spawnerHandler = spawnerHandler;
         _splineContainer = splineContainer;
-        _spawnPosition = GetSpawnPoint(_splineContainer);
+        _spawnPosition = _splineContainer.Splines.First().Knots.First().Position; ;
         _spawnDelay = enemyDistance / moveSpeed;
 
         Spawn().Forget();
@@ -57,11 +58,6 @@ public class EnemySpawnHandler
         }
     }
 
-    private Vector3 GetSpawnPoint(SplineContainer splineContainer)
-    {
-        Vector3 point = _splineContainer.Splines.First().Knots.First().Position;
 
-        return point;
-    }
 
 }

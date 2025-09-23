@@ -140,9 +140,6 @@ MonoBehaviour:
   _projectileSpawnPoint: {fileID: 2247207276240239424}
   _defenceAreaDetector: {fileID: 3339466784559568760}
   _colorGenerator: {fileID: 6401711350891021566}
-  _image: {fileID: 0}
-  _ImageProjectile: {fileID: 0}
-  _TestTrigger: {fileID: 0}
   _reciever: {fileID: 1688194887463796500}
 --- !u!114 &6256600361791663417
 MonoBehaviour:
@@ -205,23 +202,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbe80126baae4cf0ba8194133e415a29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationEvents:
-  - eventName: IsAttack
-    OnAnimationEvent:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 7323743885593425409}
-          m_TargetAssemblyTypeName: Defender, Assembly-CSharp
-          m_MethodName: DebugLog
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+  _eventName: IsAttack
+  _defender: {fileID: 7323743885593425409}
   _triggerTime: 0
 --- !u!1 &330230703183629507
 GameObject:

@@ -12,6 +12,7 @@ public class TestAttackState : State
     private DefenceAreaDetector _detector;
     private SpawnersHandler _spawnerHandler;
     private float _attackTime;
+    private float _spawnProjectileTriggerTime;
     private ProjectileTypes _projectileType;
     private List<ElementTypes> _currentElement;
     private Vector3 _spawnPosition;
@@ -31,7 +32,8 @@ public class TestAttackState : State
         List<ElementTypes> elementType,
         Vector3 spawnPosition,
         DefenderAnimatorController animatorController,
-        IRechargeable projectileContainer
+        IRechargeable projectileContainer,
+        float spawnProjectileTriggerTime
         ) : base(stateMachine)
     {
         _detector = detector;
@@ -42,6 +44,7 @@ public class TestAttackState : State
         _spawnPosition = spawnPosition;
         _animatorController = animatorController;
         _projectileContainer = projectileContainer;
+        _spawnProjectileTriggerTime = spawnProjectileTriggerTime;
     }
 
     public override void Enter()
@@ -94,7 +97,7 @@ public class TestAttackState : State
 
         _animatorController.StartAttackAnimation(requiredSpeed);
 
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * 0.7), cancellationToken: token);                                      ////////////////////////////////                    Создать класс с определением attackTime множителя
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * _spawnProjectileTriggerTime), cancellationToken: token);                                      ////////////////////////////////                    Создать класс с определением attackTime множителя
 
         if (token.IsCancellationRequested)
         {
@@ -113,7 +116,7 @@ public class TestAttackState : State
 
         _isPerformedAttack = true;
 
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * 0.3), cancellationToken: token);
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * (1 - _spawnProjectileTriggerTime)), cancellationToken: token);
 
         if (token.IsCancellationRequested)
         {

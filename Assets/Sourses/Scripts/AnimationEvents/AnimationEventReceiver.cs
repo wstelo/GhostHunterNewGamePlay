@@ -1,15 +1,42 @@
 using UnityEngine;
 using System.Collections.Generic;
+using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class AnimationEventReceiver : MonoBehaviour 
 {
-    [Range(0f, 1f)] private float _triggerTime = 0;
+    private Animator _animator;
 
-    public float TriggerTime => _triggerTime;
+    private List<AnimationEventStateBehaviour> _behaviours = new List<AnimationEventStateBehaviour>();
 
-    public void SetParameters(float value)
+    private void Awake()
     {
-        _triggerTime = value;
-        Debug.Log(_triggerTime);
+        _animator = GetComponent<Animator>();
+
+        if (_animator != null)
+        {
+            for(int i = 0;i < _animator.layerCount;i++)
+            {
+                var stateBehaviours = _animator.GetBehaviours<AnimationEventStateBehaviour>();
+                _behaviours.AddRange(stateBehaviours);
+            }
+        }     
+    }
+
+    public float GetAnimationTriggerTime(string _eventName)
+    {
+        if(_behaviours.Count == 0)
+        {
+            return default(float);
+        }
+
+        foreach (var behaviour in _behaviours)
+        {
+            if (behaviour.EventName == _eventName)
+            {
+                return behaviour.TriggerTime;
+            }
+        }
+
+        return default(float);
     }
 }

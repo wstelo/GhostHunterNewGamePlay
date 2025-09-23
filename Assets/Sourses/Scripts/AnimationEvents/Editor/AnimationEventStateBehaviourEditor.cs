@@ -64,13 +64,13 @@ public class AnimationEventStateBehaviourEditor : Editor {
 
         // Handle BlendTree logic
         if (motion is BlendTree blendTree) {
-            SampleBlendTreeAnimation(stateBehaviour, stateBehaviour.triggerTime);
+            SampleBlendTreeAnimation(stateBehaviour, stateBehaviour.TriggerTime);
             return;
         }
 
         // If it's a simple AnimationClip, sample it directly
         if (motion is AnimationClip clip) {
-            previewTime = stateBehaviour.triggerTime * clip.length;
+            previewTime = stateBehaviour.TriggerTime * clip.length;
             AnimationMode.SampleAnimationClip(Selection.activeGameObject, clip, previewTime);
         }
     }

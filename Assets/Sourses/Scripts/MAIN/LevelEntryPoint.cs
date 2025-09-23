@@ -9,7 +9,8 @@ using static UnityEditor.Progress;
 public class LevelEntryPoint : MonoBehaviour
 {
     [SerializeField] private InputHandler _inputHandler;
-    [SerializeField] private ProjectileButtonHandler _projectileButtonHandler;
+    [SerializeField] private ProjectileButtonHolder _projectileButtonHandler;
+    [SerializeField] private RefreshButtonHandler _refreshButtonHandler;
     [SerializeField] private SplineContainer _splineContainer;
     [SerializeField] private TextAsset _jsonLevelConfig;
     [SerializeField] private GraveTypeHandler _graveTypeHandler;
@@ -33,10 +34,10 @@ public class LevelEntryPoint : MonoBehaviour
         _levelConfig = GetLevelConfig();
         _elementTypesOnLevel = GetCurrentElementTypes(_levelConfig);
 
-        _cellHandler = new CellHandler(_elementTypesOnLevel, _configRepository.ElementConfigs);
-        _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler);
-        
         _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _splineContainer, _distanceBetweenEnemies, _levelConfig.LevelSpeed);
+
+        _cellHandler = new CellHandler(_elementTypesOnLevel, _configRepository.ElementConfigs, _enemySpawnHandler, _projectileButtonHandler.ButtonCount);
+        _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler, _refreshButtonHandler);
 
         _defenderSpawnHandler = new DefenderSpawnHandler(_unitSpawnerHandler, _defenderConfig);
 

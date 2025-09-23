@@ -4,18 +4,29 @@ using System.Linq;
 
 public class UnitViewHandler
 {
-    private ProjectileButtonHandler _buttonHandler;
+    private RefreshButtonHandler _refreshButtonHandler;
+    private ProjectileButtonHolder _buttonHandler;
     private CellHandler _cellHandler;
     private int _buttonCount;
     private int _repeatableUnitCount = 0;
 
-    public UnitViewHandler(CellHandler projectileCellHandler, ProjectileButtonHandler buttonHandler)
+    public UnitViewHandler(CellHandler projectileCellHandler, ProjectileButtonHolder buttonHandler, RefreshButtonHandler refreshButton)
     {
         _cellHandler = projectileCellHandler;
         _buttonHandler = buttonHandler;
         _buttonCount = _buttonHandler.ButtonCount;
+        _refreshButtonHandler = refreshButton;
+
+        _refreshButtonHandler.Clicked += InitializeButtons;
 
         InitializeButtons();
+
+        List<ProjectileButton> buttons = _buttonHandler.GetProjectileButtons();
+
+        foreach (ProjectileButton button in buttons)
+        {
+            button.Disabled += InitializeButtons;
+        }
     }
 
     public void InitializeButtons()
