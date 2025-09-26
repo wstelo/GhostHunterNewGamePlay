@@ -16,13 +16,13 @@ public class EnemySpawnHandler
     private int _spawnedEnemyCount = 0;
     private int _currentEnemiesConfigIndex = 0;
 
-    public EnemySpawnHandler(LevelConfig config, SpawnersHandler spawnerHandler, SplineContainer splineContainer, float enemyDistance, float moveSpeed)
+    public EnemySpawnHandler(LevelConfig config, SpawnersHandler spawnerHandler, SplineContainer splineContainer, float distanceBetweenEnemy)
     {
         _levelConfig = config;
         _spawnerHandler = spawnerHandler;
         _splineContainer = splineContainer;
         _spawnPosition = _splineContainer.Splines.First().Knots.First().Position; ;
-        _spawnDelay = enemyDistance / moveSpeed;
+        _spawnDelay = distanceBetweenEnemy / config.LevelSpeed;
 
         Spawn().Forget();
     }

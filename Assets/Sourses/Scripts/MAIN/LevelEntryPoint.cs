@@ -18,12 +18,14 @@ public class LevelEntryPoint : MonoBehaviour
 
     private float _distanceBetweenEnemies = GameStaticData.DistanceBetweenEnemies;                                   ////////////////////////////////////////////////
     private EnemySpawnHandler _enemySpawnHandler;
-    private CellHandler _cellHandler;
+    private TestCellHandler _cellHandler;
     private UnitViewHandler _unitViewHandler;
     private DefenderSpawnHandler _defenderSpawnHandler;
 
-    private List<ElementTypes> _elementTypesOnLevel;
     private LevelConfig _levelConfig;
+
+
+    private ElementColorizer _elementColorizer;
 
     [Inject] private SpawnersHandler _unitSpawnerHandler;
     [Inject] private ConfigsRepository _configRepository;
@@ -32,35 +34,16 @@ public class LevelEntryPoint : MonoBehaviour
     private void Awake()
     {
         _levelConfig = GetLevelConfig();
-        _elementTypesOnLevel = GetCurrentElementTypes(_levelConfig);
-
-        _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _splineContainer, _distanceBetweenEnemies, _levelConfig.LevelSpeed);
-
-        _cellHandler = new CellHandler(_elementTypesOnLevel, _configRepository.ElementConfigs, _enemySpawnHandler, _projectileButtonHandler.ButtonCount);
-        _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler, _refreshButtonHandler);
-
+        _enemySpawnHandler = new EnemySpawnHandler(_levelConfig, _unitSpawnerHandler, _splineContainer, _distanceBetweenEnemies);
         _defenderSpawnHandler = new DefenderSpawnHandler(_unitSpawnerHandler, _defenderConfig);
-
         _unitPlatformHandler.Initialize(_defenderSpawnHandler);
         _graveTypeHandler.Init(_levelConfig);
-    }
 
-    private List<ElementTypes> GetCurrentElementTypes(LevelConfig levelConfig)
-    {
-        List<ElementTypes> elements = new List<ElementTypes>();
 
-        foreach (var enemyConfig in levelConfig.EnemiesLevelConfigs)
-        {
-            foreach (var element in enemyConfig.ElementTypes)
-            {
-                if (elements.Contains(element) == false)
-                {
-                    elements.Add(element);
-                }
-            }
-        }
-
-        return elements;
+        _elementColorizer = new ElementColorizer(_configRepository.ElementConfigs); ////////////////////////////////////////////// использовать Colorizer где можно
+        _cellHandler = new TestCellHandler(_levelConfig, _configRepository.ElementConfigs, _enemySpawnHandler, _projectileButtonHandler.ButtonCount, _elementColorizer);
+        _unitViewHandler = new UnitViewHandler(_cellHandler, _projectileButtonHandler, _refreshButtonHandler);
+   
     }
 
     public void Init(LevelData currentLevel)

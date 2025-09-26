@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DefenderAnimatorController : MonoBehaviour
 {
-    [SerializeField] private Animator _animator;
+    [SerializeField] public Animator _animator;           ///////////////////////////
     [SerializeField] private List<AnimationClip> _clips = new List<AnimationClip>();
 
     private float _defaultAnimatorSpeed = 1;

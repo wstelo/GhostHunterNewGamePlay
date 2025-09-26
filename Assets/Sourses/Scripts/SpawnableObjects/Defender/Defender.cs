@@ -17,7 +17,7 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
 
     private StateMachine _stateMachine;
     private SpawnersHandler _spawnerHandler;
-    private float _attackDelay = 2f;
+    private float _attackDelay = 1f;
 
     private float _spawnProjectileTriggerTime = 0f;
 

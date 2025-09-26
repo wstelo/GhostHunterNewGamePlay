@@ -1,19 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
-public class CellHandler
+public class TestCellHandler
 {
-    private List<ElementConfig> _elementConfigs = new List<ElementConfig>();
-    private List<ElementTypes> _levelTypes = new List<ElementTypes>();
     private EnemySpawnHandler _enemySpawnHandler;         ///////////////////
+    private ElementColorizer _colorizer;
+    private List<ElementConfig> _elementConfigs = new List<ElementConfig>();
 
     private List<Enemy> _enemies = new List<Enemy>();
-    private int _projectileButtonCount = 0;
-    private ElementColorizer _colorizer;
+    private List<ElementTypes> _levelTypes = new List<ElementTypes>();
 
+
+    private Dictionary<int, EnemiesLevelConfig> _queueRepeatableEnemies = new Dictionary<int, EnemiesLevelConfig>();
+
+
+    private int _projectileButtonCount = 0;
     private static System.Random _random = new System.Random();
 
-    public CellHandler(LevelConfig levelConfig, List<ElementConfig> elementConfigs, EnemySpawnHandler spawnHandler, int projectileButtonCount, ElementColorizer colorizer)
+    public TestCellHandler(LevelConfig levelConfig, List<ElementConfig> elementConfigs, EnemySpawnHandler spawnHandler, int projectileButtonCount, ElementColorizer colorizer)
     {
         _levelTypes = GetFirstThreeElementTypesOnLevel(levelConfig);
         _elementConfigs = elementConfigs;
@@ -22,126 +27,143 @@ public class CellHandler
         _enemySpawnHandler.Spawned += AddEnemy;
         _projectileButtonCount = projectileButtonCount;
         _colorizer = colorizer;
+
+        _queueRepeatableEnemies = GroupConsecutiveEnemiesConfig(levelConfig.EnemiesLevelConfigs);
     }
 
-    public List<ProjectileCell> GetRequiredProjectilesCellsTEST()
+    public List<ProjectileCell> GetInitialCells()
     {
         List<ProjectileCell> cells = new List<ProjectileCell>();
 
-        Enemy enemy = _enemies.FirstOrDefault(enemy => enemy is BossEnemy);
+        return cells;
+    }
+
+    public List<ProjectileCell> GetCellsByCurrentEnemies()
+    {
+        List<ProjectileCell> cells = new List<ProjectileCell>();
+
+        cells = GetCells(_enemies.ToList());
+
+        return cells;
+    }
+
+    private List<ProjectileCell> GetCells(List<Enemy> enemies)
+    {
+        List<ProjectileCell> cells = new List<ProjectileCell>();
+        int maxCellValue = GetMaxConsecutiveCount(enemies);
+
+        Enemy enemy = enemies.FirstOrDefault(enemy => enemy is BossEnemy);
 
         if (enemy != null)
         {
-            cells = GetCellsForMultiEnemy(enemy, enemy.CurrentHealth);
+            List<ElementTypes> _elements = enemy.ElementTypes;
+            int currentIndex = 0;
+
+            while (cells.Count < 3 && currentIndex < _elements.Count)
+            {
+
+                cells = GetRequiredCellByType(_elements[currentIndex], enemy.CurrentHealth);
+                currentIndex++;
+            }
+
+            while (cells.Count < _projectileButtonCount)
+            {
+                cells.Add(GetSingleRandomCell(_levelTypes, GetMaxConsecutiveCount(enemies)));
+            }
         }
         else
         {
-            cells = GetCellsForSimpleEnemy();
-        }
+            int repeatableEnemyCount = 0;
 
-        if (cells.Count < _projectileButtonCount)
-        {
-            int requiredCount = _projectileButtonCount - cells.Count;
+            List<Enemy> currentEnemies = new List<Enemy>();
 
-            for (int i = 0; i < requiredCount; i++)
+            Enemy currentFirstEnemy = null;
+
+            while (cells.Count < 3)
             {
-                cells.Add(GetRandomProjectileCell());
-            }
-        }
-
-        if (cells.Count > 0)
-        {
-            return cells;
-        }
-
-        return null;
-    }
-
-    private List<ProjectileCell> GetCellsForSimpleEnemy()
-    {
-        List<ProjectileCell> cells = new List<ProjectileCell>();
-
-        int repeatableEnemyCount = 0;
-
-        Enemy firstEnemy = _enemies.First();
-
-        foreach (var enemy in _enemies)
-        {
-            if (firstEnemy.ElementTypes.ExactMatch(enemy.ElementTypes))
-            {
-                repeatableEnemyCount++;
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        if (repeatableEnemyCount > 0)
-        {
-            if (firstEnemy.ElementTypes.Count == 1)
-            {
-                ElementTypes currentElement = firstEnemy.ElementTypes.First();
-                List<int> cellsCount = GenerateProjectileCount(repeatableEnemyCount);
-
-                foreach (var cellCount in cellsCount)
+                if (enemies.Count > 0)
                 {
-                    cells.Add(new ProjectileCell(currentElement, cellCount, _colorizer.GetColorByElementType(currentElement)));
+                    currentFirstEnemy = enemies.First();
+                }
+                else
+                {
+                    return null;
+                }
+
+                foreach (var currentEnemy in enemies)
+                {
+                    if (currentFirstEnemy.ElementTypes.ExactMatch(currentEnemy.ElementTypes))
+                    {
+                        currentEnemies.Add(currentEnemy);
+                        repeatableEnemyCount++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                foreach (var currentEnemy in currentEnemies)
+                {
+                    enemies.Remove(currentEnemy);
+                }
+
+                if (repeatableEnemyCount > 0)
+                {
+                    List<ProjectileCell> requiredCells = GetRequiredCellByType(currentFirstEnemy.ElementTypes.First(), repeatableEnemyCount);
+
+                    foreach (var requiredCell in requiredCells)
+                    {
+                        cells.Add(requiredCell);
+                    }
                 }
             }
-            else
+
+            while (cells.Count < _projectileButtonCount)
             {
-                GetCellsForMultiEnemy(firstEnemy, repeatableEnemyCount);
+                cells.Add(GetSingleRandomCell(_levelTypes, maxCellValue));
             }
         }
 
-        if (cells.Count > 0)
-        {
-            return cells;
-        }
-
-        return null;
+        return cells;
     }
 
-    private List<ProjectileCell> GetCellsForMultiEnemy(Enemy enemy, int requiredCount)
+    private ProjectileCell GetSingleRandomCell(List<ElementTypes> currentElements, int maxCountOnLevel)
+    {
+        int minCount = 1;
+
+        if (currentElements.Count == 0 || maxCountOnLevel <= 0)
+        {
+            return null;
+        }
+
+        ElementTypes type = currentElements[_random.Next(currentElements.Count)];
+        int count = _random.Next(minCount, maxCountOnLevel);
+        ProjectileCell cell = new ProjectileCell(type, count, _colorizer.GetColorByElementType(type));
+
+        return cell;
+    }
+
+    private List<ProjectileCell> GetRequiredCellByType(ElementTypes currentElement, int requiredCount)
     {
         List<ProjectileCell> cells = new List<ProjectileCell>();
-        ElementTypes elementTypes = enemy.ElementTypes[_random.Next(enemy.ElementTypes.Count)];
 
-        List<int> cellsCount = GenerateProjectileCount(requiredCount);
-
-        if (cellsCount.Count < 3)
+        if (requiredCount > 0)
         {
-            foreach (var cellCount in cellsCount)
-            {
-                cells.Add(new ProjectileCell(elementTypes, cellCount, _colorizer.GetColorByElementType(elementTypes)));
-            }
-
-            var availableElements = enemy.ElementTypes.Where(x => x != elementTypes).ToList();
-
-            ElementTypes newElement = availableElements[_random.Next(availableElements.Count)];
-            cellsCount = GenerateProjectileCount(requiredCount);
+            List<int> cellsCount = GenerateProjectileCount(requiredCount);
 
             foreach (var cellCount in cellsCount)
             {
-                cells.Add(new ProjectileCell(newElement, cellCount, _colorizer.GetColorByElementType(elementTypes)));
+                cells.Add(new ProjectileCell(currentElement, cellCount, _colorizer.GetColorByElementType(currentElement)));
             }
-        }
-        else
-        {
-            foreach (var cellCount in cellsCount)
-            {
-                cells.Add(new ProjectileCell(elementTypes, cellCount, _colorizer.GetColorByElementType(elementTypes)));
-            }
-        }
 
-        if (cells.Count > 0)
-        {
             return cells;
         }
 
         return null;
     }
+
+
 
     private void AddEnemy(Enemy enemy)
     {
@@ -162,11 +184,11 @@ public class CellHandler
     {
         _enemies.Remove(enemy);
 
-        foreach(var enemyElement in enemy.ElementTypes)
+        foreach (var enemyElement in enemy.ElementTypes)
         {
             foreach (var currentEnemy in _enemies)
             {
-                if(currentEnemy.ElementTypes.Contains(enemyElement) == false)
+                if (currentEnemy.ElementTypes.Contains(enemyElement) == false)
                 {
                     _levelTypes.Remove(enemyElement);
                 }
@@ -174,26 +196,6 @@ public class CellHandler
         }
 
         enemy.Disabled -= RemoveEnemy;
-    }
-
-    private ProjectileCell GetRandomProjectileCell()
-    {
-        System.Random random = new System.Random();
-
-        int randomIndex = random.Next(0, _levelTypes.Count);
-        int randomCount = random.Next(1, GameStaticData.MaximumProjectileCellNumber + 1);
-
-        foreach (var elementData in _elementConfigs)
-        {
-            if (elementData.Type == _levelTypes[randomIndex])
-            {
-                ProjectileCell cell = new ProjectileCell(elementData.Type, randomCount, elementData.Color);
-
-                return cell;
-            }
-        }
-
-        return null;
     }
 
     private List<int> GenerateProjectileCount(int repeatableElementsCount)
@@ -320,5 +322,55 @@ public class CellHandler
         }
 
         return elements;
+    }
+
+    private int GetMaxConsecutiveCount(List<Enemy> enemies)
+    {
+        if (enemies == null || enemies.Count == 0)
+        {
+            return 0;
+        }
+
+        Enemy tempEnemy = enemies[0];
+        int maxConsecutiveCount = 1;
+        int currentCount = 1;
+
+        foreach (var enemy in enemies)
+        {
+            if (tempEnemy.ElementTypes.ExactMatch(enemy.ElementTypes))
+            {
+                currentCount++;
+                maxConsecutiveCount = Mathf.Max(maxConsecutiveCount, currentCount);
+            }
+            else
+            {
+                tempEnemy = enemy;
+                currentCount = 1;
+            }
+        }
+
+        return maxConsecutiveCount;
+    }
+
+    private Dictionary<int, EnemiesLevelConfig> GroupConsecutiveEnemiesConfig(List<EnemiesLevelConfig> enemies)
+    {
+        Dictionary<int, EnemiesLevelConfig> groupedEnemies = new Dictionary<int, EnemiesLevelConfig>();
+
+        if (enemies == null || enemies.Count == 0)
+        {
+            return groupedEnemies;
+        }
+
+        int groupIndex = 1;
+        List<ElementTypes> currentElements = enemies.First().ElementTypes;
+        List<EnemiesLevelConfig> currentGroup = new List<EnemiesLevelConfig>();
+
+        foreach (var enemy in enemies)
+        {
+            groupedEnemies.Add(groupIndex, enemy);
+            groupIndex++;
+        }
+
+        return groupedEnemies;
     }
 }

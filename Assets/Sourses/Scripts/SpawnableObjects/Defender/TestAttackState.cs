@@ -91,19 +91,22 @@ public class TestAttackState : State
             }           
         }
 
+        await UniTask.WaitUntil(() => _animatorController._animator.GetCurrentAnimatorStateInfo(0).IsName(DefenderAnimationData.IdleClipName));
+
         float defaultClipLength = _animatorController.GetAnimationLength(DefenderAnimationData.AttackClipName);
 
         float requiredSpeed = defaultClipLength / _attackTime;
 
         _animatorController.StartAttackAnimation(requiredSpeed);
 
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * _spawnProjectileTriggerTime), cancellationToken: token);                                      ////////////////////////////////                    Создать класс с определением attackTime множителя
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * _spawnProjectileTriggerTime), cancellationToken: token);                                      ////////////////////////////////  Создать класс с определением attackTime множителя
 
         if (token.IsCancellationRequested)
         {
+            StateMachine.SetState<DefenderIdleState>();
             return;
         }
-        
+
         if (_currentTarget.CurrentState != this && _currentTarget.IsMarked == true)
         {
             _detector.Delete(_currentTarget);
@@ -113,17 +116,18 @@ public class TestAttackState : State
 
         Projectile currentProjectile = _spawnerHandler.SpawnProjectile(_projectileType, _currentElement.First(), _spawnPosition);           //////////////////////////////////////// Add multi Projectile?
         currentProjectile.SetTarget(_currentTarget);
+        _projectileContainer.DecreaseCount();
 
         _isPerformedAttack = true;
 
-        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * (1 - _spawnProjectileTriggerTime)), cancellationToken: token);
+        await UniTask.Delay(TimeSpan.FromSeconds(_attackTime * (1 - _spawnProjectileTriggerTime)), cancellationToken: token);                   ///////////////////// magic      
 
         if (token.IsCancellationRequested)
         {
+            StateMachine.SetState<DefenderIdleState>();
             return;
         }
 
-        _projectileContainer.DecreaseCount();
         StateMachine.SetState<DefenderIdleState>();
     }
 }
