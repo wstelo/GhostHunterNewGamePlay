@@ -63,6 +63,7 @@ public abstract class Defender : MonoBehaviour, ISpawnableObject<Defender>
     {
         _stateMachine.Reset();
         ProjectileContainer.Clear();
+        _defenceAreaDetector.Clear();
         Disabled?.Invoke(this);
     }
 

@@ -59,4 +59,9 @@ public class DefenceAreaDetector : MonoBehaviour
         _currentEnemies.Remove(enemy);
         enemy.Disabled -= Delete;
     }
+
+    public void Clear()
+    {
+        _currentEnemies.Clear();
+    }
 }

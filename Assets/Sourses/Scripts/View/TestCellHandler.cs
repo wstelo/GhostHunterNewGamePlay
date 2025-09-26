@@ -108,16 +108,24 @@ public class TestCellHandler
                     enemies.Remove(currentEnemy);
                 }
 
+                
+
                 if (repeatableEnemyCount > 0)
                 {
                     List<ProjectileCell> requiredCells = GetRequiredCellByType(currentFirstEnemy.ElementTypes.First(), repeatableEnemyCount);
 
                     foreach (var requiredCell in requiredCells)
                     {
+                        Debug.Log($"Добавили - {requiredCell.ElementType}, count: {requiredCell.Count}, ");
                         cells.Add(requiredCell);
-                    }
+                    }                
                 }
+
+                currentEnemies.Clear();
+                repeatableEnemyCount = 0;
             }
+
+            Debug.Log(cells.Count);
 
             while (cells.Count < _projectileButtonCount)
             {
